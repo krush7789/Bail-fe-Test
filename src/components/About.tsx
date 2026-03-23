@@ -26,7 +26,7 @@ export default function About() {
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
         {/* Text */}
         <div ref={leftRef} className="fade-up">
-          <span className="text-xs font-medium tracking-widest uppercase text-[#5158e9]">
+          <span className="text-xs font-medium tracking-widest uppercase text-[#ed821c]">
             About
           </span>
           <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tight text-[#0a0a0a] leading-tight">
@@ -69,7 +69,7 @@ export default function About() {
 
           {/* Logo visual */}
           <div className="relative w-72 h-72 flex items-center justify-center">
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#5158e9]/5 to-[#5158e9]/10 border border-[#5158e9]/10" />
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#2e337a]/5 to-[#2e337a]/10 border border-[#2e337a]/10" />
             <div className="absolute inset-8 rounded-2xl bg-gradient-to-br from-white to-[#f8f8ff] border border-[#e8e8e8]" />
             <Image
               src="/logo.gif"
@@ -81,8 +81,8 @@ export default function About() {
           </div>
 
           {/* Floating accent */}
-          <div className="absolute -top-4 -right-4 w-24 h-24 rounded-2xl bg-[#5158e9]/8 border border-[#5158e9]/15 backdrop-blur-sm" />
-          <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-xl bg-[#ed821c]/8 border border-[#ed821c]/15" />
+          <div className="absolute -top-4 -right-4 w-24 h-24 rounded-2xl bg-[#ed821c]/8 border border-[#ed821c]/15 backdrop-blur-sm" />
+          <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-xl bg-[#2e337a]/8 border border-[#2e337a]/15" />
         </div>
       </div>
     </section>

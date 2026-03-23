@@ -61,7 +61,7 @@ export default function Navbar() {
         <div className="hidden md:flex">
           <a
             href="#contact"
-            className="text-sm font-medium px-5 py-2 rounded-full bg-[#5158e9] text-white hover:bg-[#4048d4] transition-colors duration-200"
+            className="text-sm font-medium px-5 py-2 rounded-full bg-[#2e337a] text-white hover:bg-[#232860] transition-colors duration-200"
           >
             Start a project
           </a>
@@ -112,7 +112,7 @@ export default function Navbar() {
           <li>
             <a
               href="#contact"
-              className="inline-block text-sm font-medium px-5 py-2 rounded-full bg-[#5158e9] text-white"
+              className="inline-block text-sm font-medium px-5 py-2 rounded-full bg-[#2e337a] text-white"
               onClick={() => setMenuOpen(false)}
             >
               Start a project

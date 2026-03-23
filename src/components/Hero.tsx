@@ -37,15 +37,15 @@ export default function Hero() {
 
       <div className="max-w-4xl mx-auto text-center flex flex-col items-center gap-6">
         {/* Eyebrow */}
-        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#5158e9]/30 bg-[#5158e9]/5 text-[#5158e9] text-xs font-medium tracking-widest uppercase">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#5158e9] animate-pulse" />
+        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#2e337a]/30 bg-[#2e337a]/5 text-[#2e337a] text-xs font-medium tracking-widest uppercase">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#2e337a] animate-pulse" />
           AI Agency
         </span>
 
         {/* Headline */}
         <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-[#0a0a0a] leading-[1.08]">
           We build the AI that<br />
-          <span className="text-[#5158e9]">builds your business.</span>
+          <span className="text-[#ed821c]">builds your business.</span>
         </h1>
 
         {/* Sub */}
@@ -57,7 +57,7 @@ export default function Hero() {
         <div className="flex flex-col sm:flex-row items-center gap-3 mt-2">
           <a
             href="#contact"
-            className="px-7 py-3 rounded-full bg-[#5158e9] text-white font-medium text-sm hover:bg-[#4048d4] transition-colors duration-200 shadow-lg shadow-[#5158e9]/20"
+            className="px-7 py-3 rounded-full bg-[#2e337a] text-white font-medium text-sm hover:bg-[#232860] transition-colors duration-200 shadow-lg shadow-[#2e337a]/20"
           >
             Start a project
           </a>

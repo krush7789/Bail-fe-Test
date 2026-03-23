@@ -44,7 +44,7 @@ export default function Contact() {
     <section id="contact" className="py-28 px-6 bg-[#f8f8f8]">
       <div ref={sectionRef} className="fade-up max-w-xl mx-auto">
         <div className="text-center mb-12">
-          <span className="text-xs font-medium tracking-widest uppercase text-[#5158e9]">
+          <span className="text-xs font-medium tracking-widest uppercase text-[#ed821c]">
             Get in touch
           </span>
           <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tight text-[#0a0a0a]">
@@ -57,16 +57,16 @@ export default function Contact() {
 
         {status === "success" ? (
           <div className="text-center py-16 flex flex-col items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-[#5158e9]/10 flex items-center justify-center">
+            <div className="w-14 h-14 rounded-full bg-[#ed821c]/10 flex items-center justify-center">
               <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
-                <path d="M20 6L9 17l-5-5" stroke="#5158e9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M20 6L9 17l-5-5" stroke="#ed821c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
             <p className="text-lg font-semibold text-[#0a0a0a]">Message sent!</p>
             <p className="text-sm text-[#6b7280]">We&apos;ll be in touch within 24 hours.</p>
             <button
               onClick={() => setStatus("idle")}
-              className="mt-2 text-sm text-[#5158e9] hover:underline"
+              className="mt-2 text-sm text-[#2e337a] hover:underline"
             >
               Send another message
             </button>
@@ -82,7 +82,7 @@ export default function Contact() {
                   required
                   value={form.name}
                   onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                  className="px-4 py-3 rounded-xl border border-[#e8e8e8] bg-white text-sm text-[#0a0a0a] placeholder:text-[#6b7280] focus:outline-none focus:border-[#5158e9] transition-colors"
+                  className="px-4 py-3 rounded-xl border border-[#e8e8e8] bg-white text-sm text-[#0a0a0a] placeholder:text-[#6b7280] focus:outline-none focus:border-[#ed821c] transition-colors"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -93,7 +93,7 @@ export default function Contact() {
                   required
                   value={form.email}
                   onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                  className="px-4 py-3 rounded-xl border border-[#e8e8e8] bg-white text-sm text-[#0a0a0a] placeholder:text-[#6b7280] focus:outline-none focus:border-[#5158e9] transition-colors"
+                  className="px-4 py-3 rounded-xl border border-[#e8e8e8] bg-white text-sm text-[#0a0a0a] placeholder:text-[#6b7280] focus:outline-none focus:border-[#ed821c] transition-colors"
                 />
               </div>
             </div>
@@ -108,7 +108,7 @@ export default function Contact() {
                 placeholder="Tell us about your project, the problem you're solving, and any relevant context..."
                 value={form.message}
                 onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
-                className="px-4 py-3 rounded-xl border border-[#e8e8e8] bg-white text-sm text-[#0a0a0a] placeholder:text-[#6b7280] focus:outline-none focus:border-[#5158e9] transition-colors resize-none"
+                className="px-4 py-3 rounded-xl border border-[#e8e8e8] bg-white text-sm text-[#0a0a0a] placeholder:text-[#6b7280] focus:outline-none focus:border-[#ed821c] transition-colors resize-none"
               />
             </div>
 
@@ -121,7 +121,7 @@ export default function Contact() {
             <button
               type="submit"
               disabled={status === "sending"}
-              className="mt-2 w-full py-3.5 rounded-full bg-[#5158e9] text-white font-medium text-sm hover:bg-[#4048d4] disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-200 shadow-lg shadow-[#5158e9]/20"
+              className="mt-2 w-full py-3.5 rounded-full bg-[#2e337a] text-white font-medium text-sm hover:bg-[#232860] disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-200 shadow-lg shadow-[#2e337a]/20"
             >
               {status === "sending" ? "Sending..." : "Send message"}
             </button>

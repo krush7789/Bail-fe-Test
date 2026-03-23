@@ -40,7 +40,7 @@ export default function Showcase() {
       />
 
       <div ref={sectionRef} className="fade-up max-w-6xl mx-auto text-center">
-        <span className="text-xs font-medium tracking-widest uppercase text-[#5158e9]">
+        <span className="text-xs font-medium tracking-widest uppercase text-[#ed821c]">
           Impact
         </span>
         <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tight text-white">

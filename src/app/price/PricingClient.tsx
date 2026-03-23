@@ -6,7 +6,7 @@ import Image from "next/image";
 
 const tierColors = {
   Starter: { bg: "bg-[#f8f8f8]", badge: "bg-[#e8e8e8] text-[#6b7280]", border: "border-[#e8e8e8]" },
-  Standard: { bg: "bg-[#f0f1fe]", badge: "bg-[#5158e9]/10 text-[#5158e9]", border: "border-[#5158e9]/20" },
+  Standard: { bg: "bg-[#eef0f8]", badge: "bg-[#2e337a]/10 text-[#2e337a]", border: "border-[#2e337a]/20" },
   Premium: { bg: "bg-[#0a0a0a]", badge: "bg-white/10 text-white", border: "border-white/10" },
 };
 
@@ -42,9 +42,9 @@ function TierCard({ tier }: { tier: Tier }) {
       <ul className="flex flex-col gap-2 flex-1">
         {tier.features.map((f) => (
           <li key={f} className="flex items-start gap-2.5">
-            <span className={`mt-0.5 shrink-0 w-4 h-4 rounded-full flex items-center justify-center ${isPremium ? "bg-white/10" : "bg-[#5158e9]/10"}`}>
+            <span className={`mt-0.5 shrink-0 w-4 h-4 rounded-full flex items-center justify-center ${isPremium ? "bg-white/10" : "bg-[#ed821c]/10"}`}>
               <svg width="8" height="8" fill="none" viewBox="0 0 10 10">
-                <path d="M2 5l2 2 4-4" stroke={isPremium ? "#fff" : "#5158e9"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M2 5l2 2 4-4" stroke={isPremium ? "#fff" : "#ed821c"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </span>
             <span className={`text-xs leading-relaxed ${isPremium ? "text-white/70" : "text-[#374151]"}`}>{f}</span>
@@ -58,7 +58,7 @@ function TierCard({ tier }: { tier: Tier }) {
           isPremium
             ? "bg-white text-[#0a0a0a] hover:bg-white/90"
             : tier.name === "Standard"
-            ? "bg-[#5158e9] text-white hover:bg-[#4048d4]"
+            ? "bg-[#2e337a] text-white hover:bg-[#232860]"
             : "bg-white border border-[#e8e8e8] text-[#0a0a0a] hover:border-[#0a0a0a]/20"
         }`}
       >
@@ -133,7 +133,7 @@ export default function PricingClient() {
       <div className="max-w-6xl mx-auto px-6 py-16">
         {/* Title */}
         <div className="text-center mb-12">
-          <span className="text-xs font-medium tracking-widest uppercase text-[#5158e9]">Pricing</span>
+          <span className="text-xs font-medium tracking-widest uppercase text-[#ed821c]">Pricing</span>
           <h1 className="mt-3 text-4xl md:text-5xl font-bold tracking-tight text-[#0a0a0a]">
             Transparent pricing.<br />No surprises.
           </h1>
@@ -155,7 +155,7 @@ export default function PricingClient() {
               }`}
             >
               <span>{cat.label}</span>
-              <span className={`ml-2 text-xs ${activeTab === cat.id ? "text-[#5158e9]" : "text-[#9ca3af]"}`}>
+              <span className={`ml-2 text-xs ${activeTab === cat.id ? "text-[#2e337a]" : "text-[#9ca3af]"}`}>
                 {cat.services.length}
               </span>
             </button>
@@ -172,7 +172,7 @@ export default function PricingClient() {
         <div className="mt-12 p-6 rounded-2xl bg-[#f8f8f8] border border-[#e8e8e8] text-center">
           <p className="text-sm text-[#6b7280]">
             Not sure which plan is right for you?{" "}
-            <a href="/#contact" className="text-[#5158e9] font-medium hover:underline">
+            <a href="/#contact" className="text-[#2e337a] font-medium hover:underline">
               Talk to us
             </a>{" "}
             — we&apos;ll recommend the best fit for your needs and budget.

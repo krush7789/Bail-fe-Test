@@ -2,11 +2,11 @@
 
 import { useEffect, useRef } from "react";
 
-const reasons = [
+const reasons: { icon: React.ReactNode; title: string; description: string; navy?: boolean }[] = [
   {
     icon: (
       <svg width="22" height="22" fill="none" viewBox="0 0 24 24">
-        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#5158e9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#ed821c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ),
     title: "Fast delivery",
@@ -15,20 +15,21 @@ const reasons = [
   {
     icon: (
       <svg width="22" height="22" fill="none" viewBox="0 0 24 24">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#5158e9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M9 12l2 2 4-4" stroke="#5158e9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#2e337a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M9 12l2 2 4-4" stroke="#2e337a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ),
     title: "Production quality",
     description: "Engineered to scale, not just prototype. Every system is built to handle real load.",
+    navy: true,
   },
   {
     icon: (
       <svg width="22" height="22" fill="none" viewBox="0 0 24 24">
-        <rect x="3" y="3" width="7" height="7" rx="1" stroke="#5158e9" strokeWidth="1.5"/>
-        <rect x="14" y="3" width="7" height="7" rx="1" stroke="#5158e9" strokeWidth="1.5"/>
-        <rect x="3" y="14" width="7" height="7" rx="1" stroke="#5158e9" strokeWidth="1.5"/>
-        <path d="M14 17.5h7M17.5 14v7" stroke="#5158e9" strokeWidth="1.5" strokeLinecap="round"/>
+        <rect x="3" y="3" width="7" height="7" rx="1" stroke="#ed821c" strokeWidth="1.5"/>
+        <rect x="14" y="3" width="7" height="7" rx="1" stroke="#ed821c" strokeWidth="1.5"/>
+        <rect x="3" y="14" width="7" height="7" rx="1" stroke="#ed821c" strokeWidth="1.5"/>
+        <path d="M14 17.5h7M17.5 14v7" stroke="#ed821c" strokeWidth="1.5" strokeLinecap="round"/>
       </svg>
     ),
     title: "Full AI stack",
@@ -37,12 +38,13 @@ const reasons = [
   {
     icon: (
       <svg width="22" height="22" fill="none" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="9" stroke="#5158e9" strokeWidth="1.5"/>
-        <path d="M12 7v5l3 3" stroke="#5158e9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="12" cy="12" r="9" stroke="#2e337a" strokeWidth="1.5"/>
+        <path d="M12 7v5l3 3" stroke="#2e337a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ),
     title: "Transparent process",
     description: "Clear milestones, no black boxes. You always know what's being built and why.",
+    navy: true,
   },
 ];
 
@@ -50,7 +52,7 @@ function ReasonCard({
   reason,
   delay,
 }: {
-  reason: { icon: React.ReactNode; title: string; description: string };
+  reason: { icon: React.ReactNode; title: string; description: string; navy?: boolean };
   delay: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -71,7 +73,7 @@ function ReasonCard({
       ref={ref}
       className={`fade-up ${delay} p-8 rounded-2xl border border-[#e8e8e8] bg-white`}
     >
-      <div className="w-10 h-10 rounded-lg bg-[#5158e9]/5 flex items-center justify-center mb-4">
+      <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${reason.navy ? "bg-[#2e337a]/5" : "bg-[#ed821c]/5"}`}>
         {reason.icon}
       </div>
       <h3 className="text-[16px] font-semibold text-[#0a0a0a] mb-2 tracking-tight">
@@ -100,7 +102,7 @@ export default function WhyBail() {
     <section className="py-28 px-6 bg-white">
       <div className="max-w-6xl mx-auto">
         <div ref={headingRef} className="fade-up text-center mb-16">
-          <span className="text-xs font-medium tracking-widest uppercase text-[#5158e9]">
+          <span className="text-xs font-medium tracking-widest uppercase text-[#ed821c]">
             Why us
           </span>
           <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tight text-[#0a0a0a]">

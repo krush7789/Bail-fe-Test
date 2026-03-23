@@ -22,7 +22,7 @@ function MarqueeRow({ items, reverse = false }: { items: string[]; reverse?: boo
         {doubled.map((tool, i) => (
           <span
             key={i}
-            className="inline-flex items-center mx-3 px-5 py-2.5 rounded-full border border-[#e8e8e8] bg-white text-sm font-medium text-[#6b7280] whitespace-nowrap hover:border-[#5158e9]/30 hover:text-[#5158e9] transition-colors duration-200 cursor-default"
+            className="inline-flex items-center mx-3 px-5 py-2.5 rounded-full border border-[#e8e8e8] bg-white text-sm font-medium text-[#6b7280] whitespace-nowrap hover:border-[#ed821c]/30 hover:text-[#ed821c] transition-colors duration-200 cursor-default"
           >
             {tool}
           </span>
@@ -49,7 +49,7 @@ export default function TechStack() {
   return (
     <section className="py-24 bg-[#f8f8f8] overflow-hidden">
       <div ref={headingRef} className="fade-up text-center mb-12 px-6">
-        <span className="text-xs font-medium tracking-widest uppercase text-[#5158e9]">
+        <span className="text-xs font-medium tracking-widest uppercase text-[#ed821c]">
           Tech stack
         </span>
         <h2 className="mt-3 text-3xl md:text-4xl font-bold tracking-tight text-[#0a0a0a]">
