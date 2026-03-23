@@ -32,10 +32,10 @@ export default function Navbar() {
         {/* Logo */}
         <a href="#" className="flex items-center gap-2.5 group">
           <Image
-            src="/logo.svg"
+            src="/logo.gif"
             alt="Bit AI Lab"
             width={36}
-            height={18}
+            height={36}
             className="shrink-0"
           />
           <span className="font-semibold text-[15px] tracking-tight text-[#0a0a0a]">

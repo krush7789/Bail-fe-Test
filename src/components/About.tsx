@@ -72,10 +72,10 @@ export default function About() {
             <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#5158e9]/5 to-[#5158e9]/10 border border-[#5158e9]/10" />
             <div className="absolute inset-8 rounded-2xl bg-gradient-to-br from-white to-[#f8f8ff] border border-[#e8e8e8]" />
             <Image
-              src="/logo.svg"
+              src="/logo.gif"
               alt="Bit AI Lab"
               width={140}
-              height={72}
+              height={140}
               className="relative z-10 opacity-90"
             />
           </div>

@@ -125,7 +125,7 @@ export default function PricingClient() {
       {/* Header */}
       <div className="border-b border-[#e8e8e8] px-6 py-4">
         <a href="/" className="inline-flex items-center gap-2.5 group">
-          <Image src="/logo.svg" alt="Bit AI Lab" width={32} height={16} />
+          <Image src="/logo.gif" alt="Bit AI Lab" width={32} height={32} />
           <span className="text-sm font-semibold text-[#0a0a0a]">Bit AI Lab</span>
         </a>
       </div>

@@ -42,16 +42,16 @@ export default function Footer() {
   return (
     <footer className="bg-[#0a0a0a] text-white px-6 pt-16 pb-8">
       <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
           {/* Brand */}
           <div className="flex flex-col gap-4">
             <a href="#" className="flex items-center gap-2.5">
               <Image
-                src="/logo.svg"
+                src="/logo.gif"
                 alt="Bit AI Lab"
                 width={36}
-                height={18}
-                className="brightness-0 invert"
+                height={36}
+                className="opacity-90"
               />
               <span className="font-semibold text-[15px] tracking-tight">
                 Bit AI Lab
@@ -63,7 +63,7 @@ export default function Footer() {
           </div>
 
           {/* Nav */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 md:items-end md:text-right">
             <span className="text-xs font-medium tracking-widest uppercase text-[#6b7280]">
               Navigate
             </span>
@@ -81,7 +81,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Social */}
+          {/* Social — commented out until social profiles are ready
           <div className="flex flex-col gap-4">
             <span className="text-xs font-medium tracking-widest uppercase text-[#6b7280]">
               Connect
@@ -102,12 +102,13 @@ export default function Footer() {
               ))}
             </ul>
           </div>
+          */}
         </div>
 
         {/* Bottom bar */}
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-[#6b7280]">
-            © 2025 Bit AI Lab. All rights reserved.
+            © 2026 Bit AI Lab. All rights reserved.
           </p>
           <p className="text-xs text-[#6b7280]">
             Built with Next.js & Tailwind CSS

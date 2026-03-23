@@ -15,6 +15,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Bit AI Lab — We build the AI that builds your business",
   description: "Bit AI Lab is an AI agency specializing in AI agents, automation, chatbots, AI consulting, and custom AI products.",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
