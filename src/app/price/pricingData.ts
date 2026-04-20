@@ -1,11 +1,12 @@
 export type Tier = {
   name: "Starter" | "Standard" | "Premium";
-  price: string;
+  oneTime?: string;
   monthly?: string;
-  annual: string;
+  annual?: string;
   delivery: string;
-  features: string[];
-  note?: string;
+  features: string[];          // standalone: what gets built
+  monthlyFeatures?: string[];  // retainer: what ongoing support covers
+  annualFeatures?: string[];   // annual: build deliverables + support summary
 };
 
 export type Service = {
@@ -34,9 +35,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹49,999 one-time",
-            monthly: "₹5,000/month",
-            annual: "₹1,09,999/year",
+            oneTime: "₹19,999",
+            monthly: "₹3,500/mo",
+            annual: "₹54,999/yr",
             delivery: "7 days",
             features: [
               "Button/decision-tree bot (rule-based, no AI)",
@@ -44,12 +45,26 @@ export const pricingData: Category[] = [
               "Up to 25 pre-defined responses",
               "Basic lead capture (name, phone, email)",
             ],
+            monthlyFeatures: [
+              "Bot uptime monitoring",
+              "Fix broken flows or button responses",
+              "Add or edit up to 5 responses per month",
+              "WhatsApp / platform API update handling",
+              "Monthly health check report",
+            ],
+            annualFeatures: [
+              "Button/decision-tree bot built and delivered (1 platform)",
+              "Up to 25 pre-defined responses + basic lead capture",
+              "10 months of support: uptime monitoring, broken flow fixes",
+              "Up to 5 response edits per month",
+              "WhatsApp / platform API update handling",
+            ],
           },
           {
             name: "Standard",
-            price: "₹1,49,999 one-time",
-            monthly: "₹12,000/month",
-            annual: "₹2,93,999/year",
+            oneTime: "₹79,999",
+            monthly: "₹10,000/mo",
+            annual: "₹1,79,999/yr",
             delivery: "21 days",
             features: [
               "AI/NLP-powered (understands natural language)",
@@ -58,12 +73,26 @@ export const pricingData: Category[] = [
               "CRM integration (auto-captures leads to Zoho/HubSpot/Sheet)",
               "Fallback to human agent",
             ],
+            monthlyFeatures: [
+              "Add up to 10 new intents per month",
+              "CRM sync troubleshooting and fixes",
+              "Bot performance review (accuracy, drop-off points)",
+              "Minor prompt and training improvements",
+              "Platform API update handling",
+            ],
+            annualFeatures: [
+              "AI/NLP bot built and trained on your FAQs (1 platform, up to 100 intents)",
+              "CRM integration + human agent fallback setup",
+              "10 months of support: up to 10 new intents/month",
+              "CRM sync fixes, performance reviews, prompt improvements",
+              "Platform API update handling",
+            ],
           },
           {
             name: "Premium",
-            price: "₹3,99,999 one-time",
-            monthly: "₹25,000/month",
-            annual: "₹6,99,999/year",
+            oneTime: "₹2,49,999",
+            monthly: "₹18,000/mo",
+            annual: "₹4,29,999/yr",
             delivery: "45 days",
             features: [
               "AI + RAG-powered (answers from your documents & knowledge base)",
@@ -71,6 +100,20 @@ export const pricingData: Category[] = [
               "Unlimited intents, multi-language (Hindi + English)",
               "Full CRM integration + lead scoring + analytics dashboard",
               "Escalation workflows + dedicated support",
+            ],
+            monthlyFeatures: [
+              "Cross-platform monitoring (website + WhatsApp + Telegram)",
+              "Proactive RAG re-indexing when your documents are updated",
+              "Lead scoring rule adjustments",
+              "Analytics dashboard review + recommendations",
+              "Priority support with guaranteed response time",
+            ],
+            annualFeatures: [
+              "AI + RAG bot built across 3 platforms (website + WhatsApp + Telegram)",
+              "Full CRM integration + lead scoring + analytics dashboard",
+              "Escalation workflow setup",
+              "10 months of support: cross-platform monitoring, RAG re-indexing",
+              "Lead scoring adjustments, analytics reviews, priority support",
             ],
           },
         ],
@@ -81,43 +124,86 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹1,99,999 one-time",
-            monthly: "₹15,000/month",
-            annual: "₹3,79,999/year",
+            oneTime: "₹59,999",
+            monthly: "₹8,000/mo",
+            annual: "₹1,39,999/yr",
             delivery: "14 days",
             features: [
-              "IVR-style voice bot (press 1 for sales, press 2 for support)",
-              "Up to 5 call flows",
-              "Single phone number / telephony integration",
-              "Basic call logging",
-              "Hindi OR English",
+              "Conversational AI voice agent (ElevenLabs) — no menus, real natural speech",
+              "2 inbound call flows (e.g. general enquiry + appointment booking)",
+              "Exotel virtual phone number setup (Indian number)",
+              "Basic call logging to Google Sheets (transcript, duration, timestamp)",
+              "Hindi OR English (client chooses one)",
+            ],
+            monthlyFeatures: [
+              "Weekly call log review — check for failed transfers or dropped calls",
+              "System prompt edits when client updates hours/services (up to 5/month)",
+              "Exotel number renewal and credit top-ups",
+              "ElevenLabs agent uptime monitoring",
+              "Monthly call report: total calls, bookings captured, transfer rate",
+            ],
+            annualFeatures: [
+              "Conversational AI voice agent built (2 inbound flows, Exotel number setup)",
+              "Hindi OR English, Google Sheets call log, ElevenLabs + Exotel integration",
+              "10 months of support: weekly log reviews, system prompt edits (5/month)",
+              "Exotel credit top-ups and uptime monitoring",
+              "Monthly call reports included",
             ],
           },
           {
             name: "Standard",
-            price: "₹5,99,999 one-time",
-            monthly: "₹40,000/month",
-            annual: "₹10,79,999/year",
+            oneTime: "₹2,49,999",
+            monthly: "₹22,000/mo",
+            annual: "₹4,69,999/yr",
             delivery: "30 days",
             features: [
-              "Conversational AI voice agent (no menus, understands natural speech)",
-              "Up to 15 call flows (inbound + outbound)",
-              "CRM integration (logs call outcomes automatically)",
-              "Call transcription + summary after every call",
-              "Hindi + English",
+              "Conversational AI voice agent — understands natural speech, no menus",
+              "Up to 10 call flows (inbound + outbound)",
+              "CRM integration (Zoho/HubSpot — logs caller, intent, outcome after each call)",
+              "Full call transcription + summary delivered after every call",
+              "Hindi + English, smart escalation to human agent",
+            ],
+            monthlyFeatures: [
+              "Add or refine up to 3 call flows per month",
+              "CRM sync troubleshooting and field mapping updates",
+              "Call quality review: resolution rate, escalation rate, avg duration",
+              "System prompt and knowledge base updates",
+              "Monthly performance report with improvement recommendations",
+            ],
+            annualFeatures: [
+              "Conversational AI voice agent built (up to 10 flows, inbound + outbound)",
+              "CRM integration + human escalation + full transcription setup",
+              "Hindi + English support",
+              "10 months of support: up to 3 new flows/month, CRM fixes, quality reviews",
+              "Monthly performance reports included",
             ],
           },
           {
             name: "Premium",
-            price: "₹14,99,999 one-time",
-            monthly: "₹1,00,000/month",
-            annual: "₹26,99,999/year",
+            oneTime: "₹7,99,999",
+            monthly: "₹55,000/mo",
+            annual: "₹13,49,999/yr",
             delivery: "60 days",
             features: [
-              "Custom-trained voice model with your brand's voice & tone",
-              "Unlimited call flows, 3+ Indian languages",
-              "Full CRM integration + real-time escalation to human agent",
-              "Analytics dashboard (call volume, resolution rate, sentiment)",
+              "Custom-trained voice agent with your brand's voice clone (ElevenLabs)",
+              "Unlimited call flows, 3+ Indian languages (Hindi, Tamil, Telugu + English)",
+              "Full CRM integration + real-time escalation to live agent",
+              "Analytics dashboard: call volume, resolution rate, drop-off, sentiment",
+              "Outbound calling campaigns + proactive appointment reminders",
+            ],
+            monthlyFeatures: [
+              "Voice model refresh when brand voice or tone changes",
+              "Unlimited call flow additions and edits",
+              "CRM integration monitoring and field updates",
+              "Analytics dashboard review + insight report",
+              "Priority support with guaranteed SLA response",
+            ],
+            annualFeatures: [
+              "Custom voice agent built with brand voice clone + unlimited call flows",
+              "3+ Indian languages, CRM integration, real-time escalation, outbound campaigns",
+              "Analytics dashboard setup",
+              "10 months of support: voice model refresh, unlimited flow edits, CRM monitoring",
+              "Analytics reviews + priority SLA support",
             ],
           },
         ],
@@ -128,9 +214,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹75,000 one-time",
-            monthly: "₹10,000/month",
-            annual: "₹1,95,000/year",
+            oneTime: "₹35,000",
+            monthly: "₹7,000/mo",
+            annual: "₹1,05,000/yr",
             delivery: "14 days",
             features: [
               "1 department automated (e.g., invoice approval, leave requests)",
@@ -141,9 +227,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹3,99,999 one-time",
-            monthly: "₹30,000/month",
-            annual: "₹7,59,999/year",
+            oneTime: "₹1,99,999",
+            monthly: "₹18,000/mo",
+            annual: "₹3,79,999/yr",
             delivery: "45 days",
             features: [
               "2-3 departments automated",
@@ -155,9 +241,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹12,99,999 one-time",
-            monthly: "₹75,000/month",
-            annual: "₹21,99,999/year",
+            oneTime: "₹7,99,999",
+            monthly: "₹45,000/mo",
+            annual: "₹12,49,999/yr",
             delivery: "90 days",
             features: [
               "Full-org automation audit + implementation",
@@ -175,9 +261,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹35,000 one-time",
-            monthly: "₹8,000/month",
-            annual: "₹1,31,000/year",
+            oneTime: "₹25,000",
+            monthly: "₹6,000/mo",
+            annual: "₹85,000/yr",
             delivery: "7 days",
             features: [
               "Template-based OCR for 1 document type (e.g., invoices only)",
@@ -187,9 +273,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹1,49,999 one-time",
-            monthly: "₹20,000/month",
-            annual: "₹3,89,999/year",
+            oneTime: "₹99,999",
+            monthly: "₹15,000/mo",
+            annual: "₹2,49,999/yr",
             delivery: "21 days",
             features: [
               "AI-powered extraction for 3 document types",
@@ -200,9 +286,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹4,99,999 one-time",
-            monthly: "₹50,000/month",
-            annual: "₹10,99,999/year",
+            oneTime: "₹3,49,999",
+            monthly: "₹35,000/mo",
+            annual: "₹6,99,999/yr",
             delivery: "45 days",
             features: [
               "AI extraction for 10+ document types, unlimited volume",
@@ -219,9 +305,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹3,99,999 one-time",
-            monthly: "₹15,000/month",
-            annual: "₹5,79,999/year",
+            oneTime: "₹79,999",
+            monthly: "₹8,000/mo",
+            annual: "₹1,59,999/yr",
             delivery: "21 days",
             features: [
               "1 bot automating 1 process",
@@ -232,9 +318,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹12,99,999 one-time",
-            monthly: "₹35,000/month",
-            annual: "₹17,19,999/year",
+            oneTime: "₹3,49,999",
+            monthly: "₹22,000/mo",
+            annual: "₹5,69,999/yr",
             delivery: "45 days",
             features: [
               "3 bots automating 3-5 processes",
@@ -245,9 +331,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹35,99,999 one-time",
-            monthly: "₹75,000/month",
-            annual: "₹44,99,999/year",
+            oneTime: "₹12,99,999",
+            monthly: "₹45,000/mo",
+            annual: "₹17,49,999/yr",
             delivery: "90 days",
             features: [
               "10+ bots, unlimited processes",
@@ -264,9 +350,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹35,000 one-time",
-            monthly: "₹5,000/month",
-            annual: "₹95,000/year",
+            oneTime: "₹25,000",
+            monthly: "₹4,000/mo",
+            annual: "₹65,000/yr",
             delivery: "7 days",
             features: [
               "Connect 2 tools (e.g., Zoho CRM ↔ Google Sheets)",
@@ -276,9 +362,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹1,49,999 one-time",
-            monthly: "₹15,000/month",
-            annual: "₹3,29,999/year",
+            oneTime: "₹99,999",
+            monthly: "₹12,000/mo",
+            annual: "₹2,19,999/yr",
             delivery: "21 days",
             features: [
               "Connect 4-6 tools with custom business logic",
@@ -289,9 +375,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹4,99,999 one-time",
-            monthly: "₹35,000/month",
-            annual: "₹9,19,999/year",
+            oneTime: "₹3,49,999",
+            monthly: "₹25,000/mo",
+            annual: "₹5,99,999/yr",
             delivery: "45 days",
             features: [
               "Full ecosystem integration (8+ tools)",
@@ -308,9 +394,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹15,000 one-time",
-            monthly: "₹3,000/month",
-            annual: "₹51,000/year",
+            oneTime: "₹12,000",
+            monthly: "₹2,500/mo",
+            annual: "₹37,000/yr",
             delivery: "3 days",
             features: [
               "3 simple workflows (e.g., form → CRM → email notification)",
@@ -320,9 +406,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹75,000 one-time",
-            monthly: "₹10,000/month",
-            annual: "₹1,95,000/year",
+            oneTime: "₹59,999",
+            monthly: "₹8,000/mo",
+            annual: "₹1,39,999/yr",
             delivery: "14 days",
             features: [
               "10 workflows with conditional logic and error handling",
@@ -332,9 +418,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹2,49,999 one-time",
-            monthly: "₹25,000/month",
-            annual: "₹5,49,999/year",
+            oneTime: "₹1,99,999",
+            monthly: "₹20,000/mo",
+            annual: "₹3,99,999/yr",
             delivery: "30 days",
             features: [
               "20+ complex multi-step workflows",
@@ -352,9 +438,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹25,000 one-time",
-            monthly: "₹8,000/month",
-            annual: "₹1,21,000/year",
+            oneTime: "₹20,000",
+            monthly: "₹6,000/mo",
+            annual: "₹80,000/yr",
             delivery: "7 days",
             features: [
               "Leave request & approval via WhatsApp/email",
@@ -365,9 +451,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹1,49,999 one-time",
-            monthly: "₹20,000/month",
-            annual: "₹3,89,999/year",
+            oneTime: "₹99,999",
+            monthly: "₹15,000/mo",
+            annual: "₹2,49,999/yr",
             delivery: "21 days",
             features: [
               "AI resume screening (ranks candidates by JD match score)",
@@ -378,9 +464,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹4,99,999 one-time",
-            monthly: "₹50,000/month",
-            annual: "₹10,99,999/year",
+            oneTime: "₹3,49,999",
+            monthly: "₹35,000/mo",
+            annual: "₹6,99,999/yr",
             delivery: "45 days",
             features: [
               "Full HRMS automation (attendance, leave, payroll, performance reviews)",
@@ -398,9 +484,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹1,49,999 one-time",
-            monthly: "₹15,000/month",
-            annual: "₹3,29,999/year",
+            oneTime: "₹79,999",
+            monthly: "₹10,000/mo",
+            annual: "₹1,79,999/yr",
             delivery: "14 days",
             features: [
               "Single knowledge base (up to 100 PDFs/docs)",
@@ -411,9 +497,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹4,49,999 one-time",
-            monthly: "₹35,000/month",
-            annual: "₹8,69,999/year",
+            oneTime: "₹2,49,999",
+            monthly: "₹22,000/mo",
+            annual: "₹4,69,999/yr",
             delivery: "30 days",
             features: [
               "Multiple knowledge sources (Notion, Google Drive, Confluence, PDFs)",
@@ -424,9 +510,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹12,99,999 one-time",
-            monthly: "₹75,000/month",
-            annual: "₹21,99,999/year",
+            oneTime: "₹7,99,999",
+            monthly: "₹50,000/mo",
+            annual: "₹12,99,999/yr",
             delivery: "60 days",
             features: [
               "Enterprise-grade RAG (1,000+ docs, real-time indexing)",
@@ -450,8 +536,8 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹14,999 one-time",
-            annual: "₹14,999 (no monthly fee)",
+            oneTime: "₹12,999",
+            annual: "₹12,999/yr",
             delivery: "7 days",
             features: [
               "3-5 pages, template-based design",
@@ -462,9 +548,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹49,999 one-time",
-            monthly: "₹8,000/month",
-            annual: "₹1,45,999/year",
+            oneTime: "₹49,999",
+            monthly: "₹7,000/mo",
+            annual: "₹1,19,999/yr",
             delivery: "21 days",
             features: [
               "8-12 pages, semi-custom design",
@@ -475,9 +561,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹2,49,999 one-time",
-            monthly: "₹20,000/month",
-            annual: "₹4,89,999/year",
+            oneTime: "₹1,99,999",
+            monthly: "₹15,000/mo",
+            annual: "₹3,49,999/yr",
             delivery: "45 days",
             features: [
               "Fully custom design (unique, not template-based)",
@@ -495,9 +581,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹10,000 setup",
-            monthly: "₹10,000/month",
-            annual: "₹1,30,000/year",
+            oneTime: "₹7,500 setup",
+            monthly: "₹8,000/mo",
+            annual: "₹87,500/yr",
             delivery: "Ongoing",
             features: [
               "Google My Business setup & optimization",
@@ -508,9 +594,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹20,000 setup",
-            monthly: "₹25,000/month",
-            annual: "₹3,20,000/year",
+            oneTime: "₹12,000 setup",
+            monthly: "₹20,000/mo",
+            annual: "₹2,12,000/yr",
             delivery: "Ongoing",
             features: [
               "20-30 keywords",
@@ -522,9 +608,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹30,000 setup",
-            monthly: "₹60,000/month",
-            annual: "₹7,50,000/year",
+            oneTime: "₹20,000 setup",
+            monthly: "₹50,000/mo",
+            annual: "₹5,20,000/yr",
             delivery: "Ongoing",
             features: [
               "50+ keywords",
@@ -542,8 +628,8 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹15,000/month",
-            annual: "₹1,80,000/year",
+            monthly: "₹9,999/mo",
+            annual: "₹99,990/yr",
             delivery: "Ongoing",
             features: [
               "2 platforms (Instagram + Facebook OR LinkedIn)",
@@ -554,8 +640,8 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹35,000/month",
-            annual: "₹4,20,000/year",
+            monthly: "₹25,000/mo",
+            annual: "₹2,50,000/yr",
             delivery: "Ongoing",
             features: [
               "3 platforms (Instagram + Facebook + LinkedIn)",
@@ -567,8 +653,8 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹75,000/month",
-            annual: "₹9,00,000/year",
+            monthly: "₹60,000/mo",
+            annual: "₹6,00,000/yr",
             delivery: "Ongoing",
             features: [
               "4+ platforms including YouTube Shorts",
@@ -588,9 +674,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹10,000 setup",
-            monthly: "₹10,000/month",
-            annual: "₹1,30,000/year",
+            oneTime: "₹7,500 setup",
+            monthly: "₹8,000/mo",
+            annual: "₹87,500/yr",
             delivery: "Ongoing",
             features: [
               "Manages up to ₹1L/month ad spend",
@@ -601,9 +687,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹15,000 setup",
-            monthly: "₹25,000/month",
-            annual: "₹3,15,000/year",
+            oneTime: "₹10,000 setup",
+            monthly: "₹20,000/mo",
+            annual: "₹2,10,000/yr",
             delivery: "Ongoing",
             features: [
               "Manages ₹1L–₹5L/month ad spend",
@@ -615,9 +701,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹25,000 setup",
-            monthly: "₹60,000/month",
-            annual: "₹7,45,000/year",
+            oneTime: "₹15,000 setup",
+            monthly: "₹50,000/mo",
+            annual: "₹5,15,000/yr",
             delivery: "Ongoing",
             features: [
               "Manages ₹5L+/month ad spend",
@@ -635,9 +721,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹15,000 one-time",
-            monthly: "₹5,000/month",
-            annual: "₹75,000/year",
+            oneTime: "₹12,000",
+            monthly: "₹4,000/mo",
+            annual: "₹52,000/yr",
             delivery: "5 days",
             features: [
               "WhatsApp Business API setup via BSP (WATI/Interakt)",
@@ -647,9 +733,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹75,000 one-time",
-            monthly: "₹15,000/month",
-            annual: "₹2,55,000/year",
+            oneTime: "₹59,999",
+            monthly: "₹12,000/mo",
+            annual: "₹1,79,999/yr",
             delivery: "14 days",
             features: [
               "Multi-flow chatbot (lead capture, FAQ, order tracking)",
@@ -659,9 +745,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹2,49,999 one-time",
-            monthly: "₹35,000/month",
-            annual: "₹6,69,999/year",
+            oneTime: "₹1,99,999",
+            monthly: "₹25,000/mo",
+            annual: "₹4,49,999/yr",
             delivery: "30 days",
             features: [
               "AI-powered WhatsApp agent (natural language, not button-based)",
@@ -678,9 +764,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹15,000 one-time",
-            monthly: "₹8,000/month",
-            annual: "₹1,11,000/year",
+            oneTime: "₹12,000",
+            monthly: "₹6,000/mo",
+            annual: "₹72,000/yr",
             delivery: "7 days",
             features: [
               "Email platform setup (Mailchimp/Zoho Campaigns)",
@@ -691,9 +777,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹50,000 one-time",
-            monthly: "₹20,000/month",
-            annual: "₹2,90,000/year",
+            oneTime: "₹40,000",
+            monthly: "₹15,000/mo",
+            annual: "₹1,90,000/yr",
             delivery: "14 days",
             features: [
               "3 automated sequences (welcome, nurture, re-engagement)",
@@ -705,9 +791,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹1,50,000 one-time",
-            monthly: "₹45,000/month",
-            annual: "₹6,90,000/year",
+            oneTime: "₹1,20,000",
+            monthly: "₹35,000/mo",
+            annual: "₹4,70,000/yr",
             delivery: "21 days",
             features: [
               "Full lifecycle automation (10+ sequences)",
@@ -724,8 +810,8 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹20,000/month",
-            annual: "₹2,40,000/year",
+            monthly: "₹18,000/mo",
+            annual: "₹1,80,000/yr",
             delivery: "Ongoing",
             features: [
               "500 verified leads/month (email or LinkedIn)",
@@ -736,8 +822,8 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹50,000/month",
-            annual: "₹6,00,000/year",
+            monthly: "₹45,000/mo",
+            annual: "₹4,50,000/yr",
             delivery: "Ongoing",
             features: [
               "1,500 verified leads/month",
@@ -749,8 +835,8 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹1,50,000/month",
-            annual: "₹18,00,000/year",
+            monthly: "₹1,20,000/mo",
+            annual: "₹12,00,000/yr",
             delivery: "Ongoing",
             features: [
               "3,000+ verified leads/month",
@@ -768,8 +854,8 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹15,000/month",
-            annual: "₹1,80,000/year",
+            monthly: "₹12,000/mo",
+            annual: "₹1,20,000/yr",
             delivery: "Ongoing",
             features: [
               "4 SEO blog posts/month (800-1,000 words each)",
@@ -779,8 +865,8 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹35,000/month",
-            annual: "₹4,20,000/year",
+            monthly: "₹28,000/mo",
+            annual: "₹2,80,000/yr",
             delivery: "Ongoing",
             features: [
               "8 SEO blog posts/month (1,000-1,500 words)",
@@ -791,8 +877,8 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹75,000/month",
-            annual: "₹9,00,000/year",
+            monthly: "₹65,000/mo",
+            annual: "₹6,50,000/yr",
             delivery: "Ongoing",
             features: [
               "12 fully researched SEO blogs/month (1,500-2,000 words)",
@@ -810,9 +896,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹25,000 one-time",
-            monthly: "₹8,000/month",
-            annual: "₹1,21,000/year",
+            oneTime: "₹20,000",
+            monthly: "₹6,000/mo",
+            annual: "₹80,000/yr",
             delivery: "7 days",
             features: [
               "Zoho CRM basic setup",
@@ -823,9 +909,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹1,00,000 one-time",
-            monthly: "₹20,000/month",
-            annual: "₹3,40,000/year",
+            oneTime: "₹80,000",
+            monthly: "₹15,000/mo",
+            annual: "₹2,30,000/yr",
             delivery: "21 days",
             features: [
               "Custom pipeline (6-8 stages)",
@@ -836,9 +922,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹3,49,999 one-time",
-            monthly: "₹45,000/month",
-            annual: "₹8,89,999/year",
+            oneTime: "₹2,99,999",
+            monthly: "₹35,000/mo",
+            annual: "₹6,49,999/yr",
             delivery: "45 days",
             features: [
               "Full CRM implementation (Zoho/HubSpot/custom)",
@@ -863,9 +949,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹35,000 one-time",
-            monthly: "₹8,000/month",
-            annual: "₹1,31,000/year",
+            oneTime: "₹29,999",
+            monthly: "₹6,000/mo",
+            annual: "₹89,999/yr",
             delivery: "7 days",
             features: [
               "3-5 dashboards (sales, revenue, leads)",
@@ -875,9 +961,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹1,50,000 one-time",
-            monthly: "₹20,000/month",
-            annual: "₹3,90,000/year",
+            oneTime: "₹1,20,000",
+            monthly: "₹15,000/mo",
+            annual: "₹2,70,000/yr",
             delivery: "21 days",
             features: [
               "10-15 dashboards across departments",
@@ -888,9 +974,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹5,00,000 one-time",
-            monthly: "₹50,000/month",
-            annual: "₹11,00,000/year",
+            oneTime: "₹3,99,999",
+            monthly: "₹38,000/mo",
+            annual: "₹7,79,999/yr",
             delivery: "45 days",
             features: [
               "Real-time dashboards (live data pipeline)",
@@ -907,8 +993,7 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹15,000 one-time",
-            annual: "₹15,000 (one-time)",
+            oneTime: "₹12,000",
             delivery: "3 days",
             features: [
               "One-time scrape of 1 website or source",
@@ -918,8 +1003,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹40,000 one-time OR ₹25,000/month",
-            annual: "₹3,00,000/year (if ongoing)",
+            oneTime: "₹35,000",
+            monthly: "₹22,000/mo",
+            annual: "₹2,20,000/yr",
             delivery: "7 days",
             features: [
               "Multi-source scraping (3-5 websites)",
@@ -930,8 +1016,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹1,00,000 one-time OR ₹60,000/month",
-            annual: "₹7,20,000/year (if ongoing)",
+            oneTime: "₹85,000",
+            monthly: "₹50,000/mo",
+            annual: "₹5,00,000/yr",
             delivery: "14 days",
             features: [
               "Automated scraping pipeline (runs on schedule)",
@@ -948,8 +1035,8 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹10,000/month",
-            annual: "₹1,20,000/year",
+            monthly: "₹8,000/mo",
+            annual: "₹80,000/yr",
             delivery: "Ongoing",
             features: [
               "Monitor 1 brand across 3 platforms (Twitter/X, Instagram, Google Reviews)",
@@ -959,8 +1046,8 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹30,000/month",
-            annual: "₹3,60,000/year",
+            monthly: "₹25,000/mo",
+            annual: "₹2,50,000/yr",
             delivery: "Ongoing",
             features: [
               "Monitor your brand + 2 competitors across 5 platforms",
@@ -971,8 +1058,8 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹75,000/month",
-            annual: "₹9,00,000/year",
+            monthly: "₹65,000/mo",
+            annual: "₹6,50,000/yr",
             delivery: "Ongoing",
             features: [
               "Full brand command center (all platforms + news + forums)",
@@ -990,9 +1077,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹75,000 one-time",
-            monthly: "₹15,000/month",
-            annual: "₹2,55,000/year",
+            oneTime: "₹59,999",
+            monthly: "₹12,000/mo",
+            annual: "₹1,79,999/yr",
             delivery: "21 days",
             features: [
               "1 predictive model (e.g., monthly sales forecast)",
@@ -1002,9 +1089,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹3,00,000 one-time",
-            monthly: "₹35,000/month",
-            annual: "₹7,20,000/year",
+            oneTime: "₹2,49,999",
+            monthly: "₹25,000/mo",
+            annual: "₹4,99,999/yr",
             delivery: "45 days",
             features: [
               "3 models (sales forecast + churn prediction + demand planning)",
@@ -1015,9 +1102,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹10,00,000 one-time",
-            monthly: "₹75,000/month",
-            annual: "₹19,00,000/year",
+            oneTime: "₹7,99,999",
+            monthly: "₹60,000/mo",
+            annual: "₹13,99,999/yr",
             delivery: "90 days",
             features: [
               "5+ models across all business functions",
@@ -1034,9 +1121,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹1,00,000 one-time",
-            monthly: "₹15,000/month",
-            annual: "₹2,80,000/year",
+            oneTime: "₹65,000",
+            monthly: "₹12,000/mo",
+            annual: "₹1,85,000/yr",
             delivery: "14 days",
             features: [
               "Single Indian language added (Hindi OR Tamil OR Telugu)",
@@ -1046,9 +1133,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹3,50,000 one-time",
-            monthly: "₹35,000/month",
-            annual: "₹7,70,000/year",
+            oneTime: "₹2,49,999",
+            monthly: "₹25,000/mo",
+            annual: "₹4,99,999/yr",
             delivery: "30 days",
             features: [
               "3 Indian languages (any combination)",
@@ -1058,9 +1145,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹10,00,000 one-time",
-            monthly: "₹75,000/month",
-            annual: "₹19,00,000/year",
+            oneTime: "₹7,99,999",
+            monthly: "₹55,000/mo",
+            annual: "₹13,49,999/yr",
             delivery: "60 days",
             features: [
               "6+ Indian languages",
@@ -1084,9 +1171,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹1,99,999 one-time",
-            monthly: "₹15,000/month",
-            annual: "₹3,79,999/year",
+            oneTime: "₹1,99,999",
+            monthly: "₹15,000/mo",
+            annual: "₹3,49,999/yr",
             delivery: "45 days",
             features: [
               "Core features only (1-2 user roles)",
@@ -1097,9 +1184,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹7,99,999 one-time",
-            monthly: "₹40,000/month",
-            annual: "₹12,79,999/year",
+            oneTime: "₹6,99,999",
+            monthly: "₹35,000/mo",
+            annual: "₹10,49,999/yr",
             delivery: "90 days",
             features: [
               "Full MVP with billing integration (Razorpay/Stripe)",
@@ -1110,9 +1197,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹24,99,999 one-time",
-            monthly: "₹1,00,000/month",
-            annual: "₹36,99,999/year",
+            oneTime: "₹22,99,999",
+            monthly: "₹90,000/mo",
+            annual: "₹31,99,999/yr",
             delivery: "6 months",
             features: [
               "Full-scale SaaS product",
@@ -1127,12 +1214,12 @@ export const pricingData: Category[] = [
       {
         id: 25,
         title: "AI Video Generation (Ads, Explainers, Demos)",
-        categoryNote: "One-time per video. Monthly packages available.",
+        categoryNote: "Priced per video. Annual = 40 videos (4/month × 10 months, 2 months free).",
         tiers: [
           {
             name: "Starter",
-            price: "₹8,000/video",
-            annual: "4 videos/month: ₹3,36,000/year",
+            oneTime: "₹6,999/video",
+            annual: "₹2,79,960/yr",
             delivery: "3 days",
             features: [
               "AI voiceover + stock footage + subtitles",
@@ -1143,8 +1230,8 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹25,000/video",
-            annual: "4 videos/month: ₹10,20,000/year",
+            oneTime: "₹22,000/video",
+            annual: "₹8,80,000/yr",
             delivery: "7 days",
             features: [
               "AI voiceover (custom branded voice) + animated graphics + your logo",
@@ -1156,8 +1243,8 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹75,000/video",
-            annual: "Varies by volume",
+            oneTime: "₹65,000/video",
+            annual: "Custom quote",
             delivery: "14 days",
             features: [
               "AI spokesperson avatar + custom script + professional production",
@@ -1174,9 +1261,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹25,000 one-time",
-            monthly: "₹8,000/month",
-            annual: "₹1,21,000/year",
+            oneTime: "₹20,000",
+            monthly: "₹7,000/mo",
+            annual: "₹90,000/yr",
             delivery: "5 days",
             features: [
               "SaaS-platform avatar (HeyGen/D-ID)",
@@ -1186,9 +1273,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹1,50,000 one-time",
-            monthly: "₹25,000/month",
-            annual: "₹4,50,000/year",
+            oneTime: "₹1,20,000",
+            monthly: "₹20,000/mo",
+            annual: "₹3,20,000/yr",
             delivery: "14 days",
             features: [
               "Semi-custom avatar (realistic, brand-aligned appearance)",
@@ -1199,9 +1286,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹8,00,000 one-time",
-            monthly: "₹60,000/month",
-            annual: "₹15,20,000/year",
+            oneTime: "₹6,99,999",
+            monthly: "₹50,000/mo",
+            annual: "₹11,99,999/yr",
             delivery: "30 days",
             features: [
               "Fully custom photorealistic avatar (your face or custom-created persona)",
@@ -1219,9 +1306,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹1,50,000 one-time",
-            monthly: "₹10,000/month",
-            annual: "₹2,70,000/year",
+            oneTime: "₹99,999",
+            monthly: "₹8,000/mo",
+            annual: "₹1,79,999/yr",
             delivery: "21 days",
             features: [
               "Resume parser + JD-match scoring",
@@ -1231,9 +1318,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹5,99,999 one-time",
-            monthly: "₹30,000/month",
-            annual: "₹9,59,999/year",
+            oneTime: "₹3,99,999",
+            monthly: "₹20,000/mo",
+            annual: "₹5,99,999/yr",
             delivery: "45 days",
             features: [
               "AI screening + WhatsApp interview bot (pre-screens candidates automatically)",
@@ -1244,9 +1331,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹18,99,999 one-time",
-            monthly: "₹75,000/month",
-            annual: "₹27,99,999/year",
+            oneTime: "₹12,99,999",
+            monthly: "₹55,000/mo",
+            annual: "₹18,49,999/yr",
             delivery: "90 days",
             features: [
               "Full AI co-recruiter (sourcing + screening + scheduling + offer management)",
@@ -1263,9 +1350,9 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹2,49,999 one-time",
-            monthly: "₹15,000/month",
-            annual: "₹4,29,999/year",
+            oneTime: "₹1,99,999",
+            monthly: "₹12,000/mo",
+            annual: "₹3,19,999/yr",
             delivery: "30 days",
             features: [
               "LMS setup (hosted on Moodle or TagMango)",
@@ -1276,9 +1363,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹8,99,999 one-time",
-            monthly: "₹40,000/month",
-            annual: "₹13,79,999/year",
+            oneTime: "₹7,49,999",
+            monthly: "₹30,000/mo",
+            annual: "₹10,49,999/yr",
             delivery: "60 days",
             features: [
               "Custom-branded learning platform",
@@ -1289,9 +1376,9 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹24,99,999 one-time",
-            monthly: "₹1,00,000/month",
-            annual: "₹36,99,999/year",
+            oneTime: "₹22,99,999",
+            monthly: "₹80,000/mo",
+            annual: "₹30,99,999/yr",
             delivery: "90 days",
             features: [
               "Fully custom platform with gamification",
@@ -1306,12 +1393,11 @@ export const pricingData: Category[] = [
       {
         id: 29,
         title: "Corporate AI Training & Workshops",
-        categoryNote: "One-time per session. Monthly programs available as add-on at ₹75,000/month.",
+        categoryNote: "One-time per session. Monthly training programs available as add-on.",
         tiers: [
           {
             name: "Starter",
-            price: "₹40,000/session",
-            annual: "₹40,000 per session",
+            oneTime: "₹29,999/session",
             delivery: "Half-day (3-4 hours)",
             features: [
               "Up to 15 participants",
@@ -1322,8 +1408,7 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹1,20,000/session",
-            annual: "₹1,20,000 per session",
+            oneTime: "₹99,000/session",
             delivery: "Full-day (7-8 hours)",
             features: [
               "Up to 30 participants",
@@ -1335,8 +1420,7 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹4,00,000/program",
-            annual: "₹4,00,000 per program",
+            oneTime: "₹2,99,999/program",
             delivery: "3-day bootcamp",
             features: [
               "Up to 50 participants",
@@ -1355,8 +1439,7 @@ export const pricingData: Category[] = [
         tiers: [
           {
             name: "Starter",
-            price: "₹1,50,000",
-            annual: "₹1,50,000 (one-time)",
+            oneTime: "₹99,999",
             delivery: "14 days",
             features: [
               "2-week assessment",
@@ -1367,8 +1450,7 @@ export const pricingData: Category[] = [
           },
           {
             name: "Standard",
-            price: "₹5,00,000",
-            annual: "₹5,00,000 (one-time)",
+            oneTime: "₹3,50,000",
             delivery: "30 days",
             features: [
               "4-week full audit",
@@ -1380,8 +1462,7 @@ export const pricingData: Category[] = [
           },
           {
             name: "Premium",
-            price: "₹15,00,000",
-            annual: "₹15,00,000 (one-time)",
+            oneTime: "₹9,99,999",
             delivery: "60 days",
             features: [
               "8-week enterprise engagement",

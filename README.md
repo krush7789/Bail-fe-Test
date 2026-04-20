@@ -1,4 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BAIL AI Agency — Frontend
+
+Frontend for **BAIL AI Agency**, an Indian AI agency offering 30 services across four categories: Automate, Grow, Analyse, and Scale. Built with Next.js.
+
+---
+
+## Project Structure
+
+```
+bail-fe/
+├── src/app/              — Next.js app router pages
+│   ├── price/            — Pricing page
+│   │   ├── page.tsx
+│   │   ├── PricingClient.tsx   — UI with billing toggle (Standalone / Monthly / Annual)
+│   │   └── pricingData.ts      — All 30 services with prices and feature lists
+├── services/             — Internal build playbook (how each service is delivered)
+│   ├── 01-ai-chatbots-assistants/
+│   │   ├── starter.md    — How to build the Starter tier
+│   │   ├── standard.md   — How to build the Standard tier (WIP)
+│   │   └── premium.md    — How to build the Premium tier (WIP)
+│   ├── 02-voice-ai-agents/
+│   └── ... (30 folders total, one per service)
+├── pricing.md            — Competitive pricing reference document (INR, India 2026)
+└── public/               — Static assets
+```
+
+### The `/services` folder
+
+Each of the 30 service folders contains up to three markdown files (`starter.md`, `standard.md`, `premium.md`) documenting the tech stack, build process, and retainer operations for that tier. This is the internal agency playbook — not customer-facing.
+
+---
 
 ## Getting Started
 

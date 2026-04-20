@@ -4,43 +4,74 @@ import { useState } from "react";
 import { pricingData, type Category, type Service, type Tier } from "./pricingData";
 import Image from "next/image";
 
+type BillingMode = "oneTime" | "monthly" | "annual";
+
 const tierColors = {
   Starter: { bg: "bg-[#f8f8f8]", badge: "bg-[#e8e8e8] text-[#6b7280]", border: "border-[#e8e8e8]" },
   Standard: { bg: "bg-[#eef0f8]", badge: "bg-[#2e337a]/10 text-[#2e337a]", border: "border-[#2e337a]/20" },
   Premium: { bg: "bg-[#0a0a0a]", badge: "bg-white/10 text-white", border: "border-white/10" },
 };
 
-function TierCard({ tier }: { tier: Tier }) {
+function getDisplayPrice(tier: Tier, billing: BillingMode): string {
+  if (billing === "oneTime") return tier.oneTime ?? "—";
+  if (billing === "monthly") return tier.monthly ?? "—";
+  return tier.annual ?? "—";
+}
+
+function TierCard({ tier, billing }: { tier: Tier; billing: BillingMode }) {
   const colors = tierColors[tier.name];
   const isPremium = tier.name === "Premium";
+  const displayPrice = getDisplayPrice(tier, billing);
+  const unavailable = displayPrice === "—";
+  // Monthly retainer requires the one-time setup — show setup cost as secondary
+  const monthlyNeedsSetup = billing === "monthly" && !unavailable && !!tier.oneTime;
+  // Pure monthly services have no oneTime fee
+  const isPureMonthly = billing === "monthly" && !unavailable && !tier.oneTime;
+  // Pick the right feature list for the active billing mode
+  const activeFeatures =
+    billing === "monthly" && tier.monthlyFeatures ? tier.monthlyFeatures :
+    billing === "annual" && tier.annualFeatures ? tier.annualFeatures :
+    tier.features;
 
   return (
-    <div className={`rounded-2xl border p-6 flex flex-col gap-4 ${colors.bg} ${colors.border}`}>
+    <div className={`rounded-2xl border p-6 flex flex-col gap-4 ${colors.bg} ${colors.border} ${unavailable ? "opacity-50" : ""}`}>
       <div className="flex items-center justify-between">
         <span className={`text-xs font-semibold px-2.5 py-1 rounded-full tracking-wide ${colors.badge}`}>
           {tier.name}
         </span>
         <span className={`text-xs ${isPremium ? "text-white/40" : "text-[#6b7280]"}`}>
-          Delivered in {tier.delivery}
+          {tier.delivery}
         </span>
       </div>
 
       <div>
-        <div className={`text-xl font-bold tracking-tight ${isPremium ? "text-white" : "text-[#0a0a0a]"}`}>
-          {tier.price}
+        <div className={`text-xl font-bold tracking-tight leading-tight ${isPremium ? "text-white" : "text-[#0a0a0a]"} ${unavailable ? "italic" : ""}`}>
+          {unavailable ? "Not available" : displayPrice}
         </div>
-        {tier.monthly && (
-          <div className={`text-sm mt-0.5 ${isPremium ? "text-white/60" : "text-[#6b7280]"}`}>
-            + {tier.monthly}
+        {monthlyNeedsSetup && (
+          <div className={`text-xs mt-1.5 font-medium ${isPremium ? "text-white/60" : "text-[#374151]"}`}>
+            + {tier.oneTime} one-time setup
           </div>
         )}
-        <div className={`text-xs mt-2 font-medium ${isPremium ? "text-white/50" : "text-[#6b7280]"}`}>
-          Annual: {tier.annual}
-        </div>
+        {isPureMonthly && (
+          <div className={`text-xs mt-1.5 ${isPremium ? "text-white/50" : "text-[#6b7280]"}`}>
+            No setup fee — monthly only
+          </div>
+        )}
+        {billing === "annual" && !unavailable && (
+          <div className={`text-xs mt-1.5 ${isPremium ? "text-white/50" : "text-[#6b7280]"}`}>
+            Setup + 10 months support bundled (2 months free)
+          </div>
+        )}
+        {billing === "oneTime" && !unavailable && tier.monthly && (
+          <div className={`text-xs mt-1.5 ${isPremium ? "text-white/50" : "text-[#6b7280]"}`}>
+            Optional: add {tier.monthly} retainer for ongoing support
+          </div>
+        )}
       </div>
 
       <ul className="flex flex-col gap-2 flex-1">
-        {tier.features.map((f) => (
+        {activeFeatures.map((f) => (
           <li key={f} className="flex items-start gap-2.5">
             <span className={`mt-0.5 shrink-0 w-4 h-4 rounded-full flex items-center justify-center ${isPremium ? "bg-white/10" : "bg-[#ed821c]/10"}`}>
               <svg width="8" height="8" fill="none" viewBox="0 0 10 10">
@@ -68,7 +99,7 @@ function TierCard({ tier }: { tier: Tier }) {
   );
 }
 
-function ServiceRow({ service }: { service: Service }) {
+function ServiceRow({ service, billing }: { service: Service; billing: BillingMode }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -97,7 +128,7 @@ function ServiceRow({ service }: { service: Service }) {
           )}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {service.tiers.map((tier) => (
-              <TierCard key={tier.name} tier={tier} />
+              <TierCard key={tier.name} tier={tier} billing={billing} />
             ))}
           </div>
         </div>
@@ -106,18 +137,25 @@ function ServiceRow({ service }: { service: Service }) {
   );
 }
 
-function CategorySection({ category }: { category: Category }) {
+function CategorySection({ category, billing }: { category: Category; billing: BillingMode }) {
   return (
     <div className="flex flex-col gap-3">
       {category.services.map((service) => (
-        <ServiceRow key={service.id} service={service} />
+        <ServiceRow key={service.id} service={service} billing={billing} />
       ))}
     </div>
   );
 }
 
+const billingOptions: { id: BillingMode; label: string; sublabel: string }[] = [
+  { id: "oneTime", label: "Standalone", sublabel: "Build only" },
+  { id: "monthly", label: "Monthly retainer", sublabel: "After setup" },
+  { id: "annual", label: "Annual", sublabel: "2 months free" },
+];
+
 export default function PricingClient() {
   const [activeTab, setActiveTab] = useState(pricingData[0].id);
+  const [billing, setBilling] = useState<BillingMode>("oneTime");
   const activeCategory = pricingData.find((c) => c.id === activeTab)!;
 
   return (
@@ -132,18 +170,70 @@ export default function PricingClient() {
 
       <div className="max-w-6xl mx-auto px-6 py-16">
         {/* Title */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-10">
           <span className="text-xs font-medium tracking-widest uppercase text-[#ed821c]">Pricing</span>
           <h1 className="mt-3 text-4xl md:text-5xl font-bold tracking-tight text-[#0a0a0a]">
             Transparent pricing.<br />No surprises.
           </h1>
           <p className="mt-4 text-[#6b7280] max-w-md mx-auto text-sm leading-relaxed">
-            All prices in INR, excluding 18% GST. Annual cost = one-time setup + (monthly × 12). Click any service to see tier details.
+            All prices in INR, excluding 18% GST. Click any service to see tier details.
           </p>
         </div>
 
+        {/* Billing toggle */}
+        <div className="flex justify-center mb-10">
+          <div className="inline-flex items-center gap-1 p-1.5 bg-[#f8f8f8] rounded-2xl border border-[#e8e8e8]">
+            {billingOptions.map((opt) => (
+              <button
+                key={opt.id}
+                onClick={() => setBilling(opt.id)}
+                className={`relative px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  billing === opt.id
+                    ? "bg-white text-[#0a0a0a] shadow-sm"
+                    : "text-[#6b7280] hover:text-[#0a0a0a]"
+                }`}
+              >
+                <span>{opt.label}</span>
+                {opt.id === "annual" && (
+                  <span className={`ml-1.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
+                    billing === "annual"
+                      ? "bg-[#ed821c]/10 text-[#ed821c]"
+                      : "bg-[#e8e8e8] text-[#9ca3af]"
+                  }`}>
+                    2mo free
+                  </span>
+                )}
+                <span className={`block text-[10px] font-normal leading-none mt-0.5 ${
+                  billing === opt.id ? "text-[#6b7280]" : "text-[#9ca3af]"
+                }`}>
+                  {opt.sublabel}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Billing explainer */}
+        <div className="mb-10 text-center">
+          {billing === "oneTime" && (
+            <p className="text-xs text-[#6b7280] max-w-lg mx-auto">
+              <strong className="text-[#0a0a0a]">Standalone:</strong> Pay once, we build and deliver. You own the setup. No ongoing commitment — add a monthly retainer later if needed.
+            </p>
+          )}
+          {billing === "monthly" && (
+            <p className="text-xs text-[#6b7280] max-w-lg mx-auto">
+              <strong className="text-[#0a0a0a]">Monthly retainer:</strong> After paying the one-time setup fee, you pay this monthly for maintenance, updates, and support. Cancel anytime.
+            </p>
+          )}
+          {billing === "annual" && (
+            <p className="text-xs text-[#6b7280] max-w-lg mx-auto">
+              <strong className="text-[#0a0a0a]">Annual:</strong> One-time setup + 10 months of support bundled into a single upfront payment — 2 months free vs. month-to-month.
+            </p>
+          )}
+        </div>
+
         {/* Category tabs */}
-        <div className="flex items-center gap-2 p-1.5 bg-[#f8f8f8] rounded-2xl mb-10 overflow-x-auto">
+        <div className="flex items-center gap-2 p-1.5 bg-[#f8f8f8] rounded-2xl mb-6 overflow-x-auto border border-[#e8e8e8]">
           {pricingData.map((cat) => (
             <button
               key={cat.id}
@@ -166,7 +256,7 @@ export default function PricingClient() {
         <p className="text-sm text-[#6b7280] mb-6">{activeCategory.tagline}</p>
 
         {/* Services */}
-        <CategorySection key={activeCategory.id} category={activeCategory} />
+        <CategorySection key={activeCategory.id} category={activeCategory} billing={billing} />
 
         {/* Footer note */}
         <div className="mt-12 p-6 rounded-2xl bg-[#f8f8f8] border border-[#e8e8e8] text-center">
