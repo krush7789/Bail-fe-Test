@@ -9,6 +9,7 @@ interface GlassCardProps {
   className?: string;
   glowColor?: GlowColor;
   onClick?: () => void;
+  ariaExpanded?: boolean;
 }
 
 const glowMap: Record<GlowColor, string> = {
@@ -30,11 +31,13 @@ export default function GlassCard({
   className = "",
   glowColor = "none",
   onClick,
+  ariaExpanded,
 }: GlassCardProps) {
   return (
     <div
       className={`glass-card rounded-2xl p-6 transition-all duration-300 hover:-translate-y-0.5 ${className}`}
       style={{ boxShadow: glowMap[glowColor] }}
+      aria-expanded={ariaExpanded !== undefined ? ariaExpanded : undefined}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLDivElement).style.boxShadow = glowHoverMap[glowColor];
       }}

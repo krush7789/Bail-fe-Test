@@ -20,6 +20,7 @@ export default function HowItWorks() {
           className="mb-16"
         >
           <SectionHeading
+            id="process-heading"
             eyebrow="Our Process"
             title="From scope to live system in weeks"
             align="center"

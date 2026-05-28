@@ -21,7 +21,7 @@ export default function CaseStudy() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="mb-12"
         >
-          <SectionHeading eyebrow="Client Work" title={caseStudy.headline} align="center" />
+          <SectionHeading id="casestudy-heading" eyebrow="Client Work" title={caseStudy.headline} align="center" />
         </motion.div>
 
         {/* Big metric (layered) */}

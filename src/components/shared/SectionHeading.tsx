@@ -6,6 +6,7 @@ interface SectionHeadingProps {
   subtitle?: string;
   align?: "left" | "center";
   className?: string;
+  id?: string;
 }
 
 export default function SectionHeading({
@@ -14,6 +15,7 @@ export default function SectionHeading({
   subtitle,
   align = "center",
   className = "",
+  id,
 }: SectionHeadingProps) {
   const isCenter = align === "center";
 
@@ -24,7 +26,7 @@ export default function SectionHeading({
           {eyebrow}
         </p>
       )}
-      <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
+      <h2 id={id} className="text-4xl md:text-5xl font-bold text-white leading-tight">
         {title}
       </h2>
       {subtitle && (

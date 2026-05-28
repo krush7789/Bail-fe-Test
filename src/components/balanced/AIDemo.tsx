@@ -22,6 +22,7 @@ export default function AIDemo() {
           className="mb-12"
         >
           <SectionHeading
+            id="demo-heading"
             eyebrow="Watch It Work"
             title={
               <>

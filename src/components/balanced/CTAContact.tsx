@@ -119,10 +119,11 @@ export default function CTAContact() {
             <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-medium text-white/50 uppercase tracking-widest">
+                  <label htmlFor="contact-name" className="text-xs font-medium text-white/50 uppercase tracking-widest">
                     Name
                   </label>
                   <input
+                    id="contact-name"
                     type="text"
                     placeholder="Your name"
                     required
@@ -132,10 +133,11 @@ export default function CTAContact() {
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-medium text-white/50 uppercase tracking-widest">
+                  <label htmlFor="contact-email" className="text-xs font-medium text-white/50 uppercase tracking-widest">
                     Email
                   </label>
                   <input
+                    id="contact-email"
                     type="email"
                     placeholder="you@company.com"
                     required
@@ -147,10 +149,11 @@ export default function CTAContact() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-white/50 uppercase tracking-widest">
+                <label htmlFor="contact-message" className="text-xs font-medium text-white/50 uppercase tracking-widest">
                   What are you building?
                 </label>
                 <textarea
+                  id="contact-message"
                   rows={5}
                   required
                   placeholder="Tell us about your project, the problem you're solving, and any relevant context..."

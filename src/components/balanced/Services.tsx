@@ -32,6 +32,7 @@ function ServiceCard({
       <GlassCard
         glowColor={glowColor}
         className="h-full cursor-pointer"
+        ariaExpanded={expanded}
         onClick={() => setExpanded((v) => !v)}
       >
         <div className="flex flex-col gap-3 h-full">
@@ -130,6 +131,7 @@ export default function Services() {
           className="mb-16"
         >
           <SectionHeading
+            id="services-heading"
             eyebrow="What We Build"
             title="AI services that actually ship"
             subtitle="Two capability pillars, eight productized services. Every engagement is built and run by our team — you own the output."

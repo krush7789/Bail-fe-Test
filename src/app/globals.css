@@ -159,9 +159,9 @@ body {
   background-size: 256px 256px;
 }
 
-/* Smooth scrolling */
+/* Smooth scrolling — use auto to avoid double-easing with Lenis */
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 /* Reduced-motion accessibility guard */

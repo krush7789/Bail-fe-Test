@@ -21,6 +21,7 @@ export default function WhyUs() {
           className="mb-12"
         >
           <SectionHeading
+            id="whyus-heading"
             eyebrow="Why Us"
             title="We do one thing and we do it well"
             align="center"
