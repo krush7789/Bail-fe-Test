@@ -7,7 +7,7 @@ import ImmersiveHero from "@/components/immersive/ImmersiveHero";
 import PinnedProcess from "@/components/immersive/PinnedProcess";
 import Navbar from "@/components/balanced/Navbar";
 import StatsBand from "@/components/balanced/StatsBand";
-import Services from "@/components/balanced/Services";
+import ImmersiveServices from "@/components/immersive/ImmersiveServices";
 import AIDemo from "@/components/balanced/AIDemo";
 import WhyUs from "@/components/balanced/WhyUs";
 import CaseStudy from "@/components/balanced/CaseStudy";
@@ -24,7 +24,7 @@ export default function ImmersivePage() {
       <main>
         <ImmersiveHero />
         <StatsBand />
-        <Services />
+        <ImmersiveServices />
         <AIDemo />
         <PinnedProcess />
         <WhyUs />
