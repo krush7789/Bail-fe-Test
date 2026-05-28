@@ -47,10 +47,11 @@ export default function AIChatDemo() {
   const animating = useRef(false);
   const stopped = useRef(false);
 
-  const prefersReducedMotion =
-    typeof window !== "undefined"
-      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      : false;
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(mq.matches);
+  }, []);
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {

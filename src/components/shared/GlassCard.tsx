@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 
 type GlowColor = "orange" | "navy" | "cyan" | "none";
