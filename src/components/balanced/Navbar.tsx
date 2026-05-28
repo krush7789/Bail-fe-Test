@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Button from "@/components/shared/Button";
+import { brand } from "@/content/catalog";
 
 const NAV_LINKS = [
   { label: "Services", href: "#services" },
@@ -35,11 +36,11 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group" aria-label="Bits AI Lab — home">
+        <Link href="/" className="flex items-center gap-3 group" aria-label={`${brand.name} — home`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.gif" alt="Bits AI Lab logo" width={32} height={32} className="rounded-md" />
+          <img src="/logo.gif" alt={`${brand.name} logo`} width={32} height={32} className="rounded-md" />
           <span className="text-white font-semibold text-base group-hover:text-bail-orange transition-colors duration-200">
-            Bits AI Lab
+            {brand.name}
           </span>
         </Link>
 
