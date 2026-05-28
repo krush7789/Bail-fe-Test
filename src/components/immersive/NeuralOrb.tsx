@@ -90,10 +90,11 @@ function OrbScene() {
         const bx = outerBasePositions[i * 3];
         const by = outerBasePositions[i * 3 + 1];
         const bz = outerBasePositions[i * 3 + 2];
-        const wave = Math.sin(t * 1.5 + i * 0.01) * 0.008;
-        positions[i * 3] = bx + displacement.current.x * wave * 10 + Math.sin(t + i * 0.05) * 0.004;
-        positions[i * 3 + 1] = by + displacement.current.y * wave * 10;
-        positions[i * 3 + 2] = bz + wave;
+        // Apply cursor displacement directly (0.25 factor = visible but not jarring)
+        // Keep the breathing/wave ripple as a SEPARATE additive term
+        positions[i * 3]     = bx + displacement.current.x * 0.25 + Math.sin(t + i * 0.05) * 0.004;
+        positions[i * 3 + 1] = by + displacement.current.y * 0.25;
+        positions[i * 3 + 2] = bz + Math.sin(t * 1.5 + i * 0.01) * 0.008;
       }
       outerRef.current.geometry.attributes.position.needsUpdate = true;
     }

@@ -11,7 +11,7 @@ export default function CustomCursor() {
   const dotY = useMotionValue(-100);
 
   // Spring-lagged outer ring
-  const springConfig = { stiffness: 120, damping: 18, mass: 0.8 };
+  const springConfig = { stiffness: 150, damping: 20, mass: 0.5 };
   const ringX = useSpring(dotX, springConfig);
   const ringY = useSpring(dotY, springConfig);
 
@@ -33,8 +33,6 @@ export default function CustomCursor() {
     function onMouseMove(e: MouseEvent) {
       dotX.set(e.clientX);
       dotY.set(e.clientY);
-      ringX.set(e.clientX);
-      ringY.set(e.clientY);
     }
 
     function onMouseOver(e: MouseEvent) {
@@ -53,7 +51,7 @@ export default function CustomCursor() {
     };
     cleanupRef.current = cleanup;
     return cleanup;
-  }, [prefersReduced, dotX, dotY, ringX, ringY, ringScaleX]);
+  }, [prefersReduced, dotX, dotY, ringScaleX]);
 
   if (prefersReduced) return null;
 
