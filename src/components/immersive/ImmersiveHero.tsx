@@ -69,6 +69,8 @@ function ImmersiveWordReveal({ line }: { line: string }) {
 }
 
 export default function ImmersiveHero() {
+  const prefersReduced = useReducedMotion();
+
   return (
     <section
       className="relative min-h-screen overflow-hidden bg-[var(--ink)] flex items-center"
@@ -207,8 +209,8 @@ export default function ImmersiveHero() {
       >
         <span className="text-xs text-white/30 tracking-widest uppercase">scroll</span>
         <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          animate={prefersReduced ? { y: 0 } : { y: [0, 6, 0] }}
+          transition={prefersReduced ? {} : { repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
         >
           <svg
             width="20"

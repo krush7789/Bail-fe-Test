@@ -98,7 +98,6 @@ export default function PinnedProcess() {
 
     return () => {
       ctx.revert();
-      ScrollTrigger.getAll().forEach((t) => t.kill());
     };
   }, [prefersReduced]);
 

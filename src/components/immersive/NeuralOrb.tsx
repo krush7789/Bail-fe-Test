@@ -108,6 +108,7 @@ function OrbScene() {
           <bufferAttribute
             attach="attributes-position"
             args={[outerPositions, 3]}
+            usage={THREE.DynamicDrawUsage}
           />
         </bufferGeometry>
         <pointsMaterial
@@ -171,7 +172,7 @@ function StaticOrbFallback() {
 export default function NeuralOrb() {
   const prefersReduced = useReducedMotion();
 
-  if (prefersReduced) {
+  if (prefersReduced !== false) {
     return <StaticOrbFallback />;
   }
 
