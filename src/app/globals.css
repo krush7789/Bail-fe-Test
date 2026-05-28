@@ -40,6 +40,8 @@
   --color-bail-orange: var(--bail-orange);
   --color-bail-navy: var(--bail-navy);
   --color-bail-surface: var(--bail-surface);
+  --color-bail-border: var(--bail-border);
+  --color-bail-muted: var(--bail-muted);
   --color-glow-orange: var(--glow-orange);
   --color-glow-navy: var(--glow-navy);
   --color-glow-cyan: var(--glow-cyan);
@@ -116,7 +118,7 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes count-up {
+@keyframes fade-up-subtle {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
@@ -145,6 +147,7 @@ body {
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
 }
 
 .noise-overlay {
@@ -166,7 +169,11 @@ html {
   .aurora-blob,
   .fade-up,
   .marquee-track,
-  .marquee-track-reverse {
+  .marquee-track-reverse,
+  .animate-aurora,
+  .animate-glow,
+  .animate-fade-up,
+  .animate-count {
     animation: none !important;
     transition: none !important;
   }
