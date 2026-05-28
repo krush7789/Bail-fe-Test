@@ -30,9 +30,9 @@ export default function AnimatedCounter({
   useEffect(() => {
     if (!isInView || hasAnimated.current || !parsed) return;
 
-    // Check prefers-reduced-motion
+    // Check prefers-reduced-motion — displayed is already initialised to value,
+    // so no setState call is needed; just mark as animated and skip the rAF loop.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setDisplayed(value);
       hasAnimated.current = true;
       return;
     }
