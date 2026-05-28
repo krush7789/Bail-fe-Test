@@ -6,25 +6,6 @@ import type { NodeKind } from "./nodeLayout";
 
 type Status = "waiting" | "running" | "done";
 
-// Icon map per kind
-const kindIcon: Record<NodeKind, string> = {
-  trigger: "⚡",
-  action: "▣",
-  branch: "⑂",
-  merge: "⑂",
-  watch: "▶",
-  output: "✓",
-};
-
-const kindLabel: Record<NodeKind, string> = {
-  trigger: "TRIGGER",
-  action: "ACTION",
-  branch: "BRANCH",
-  merge: "MERGE",
-  watch: "EXECUTE",
-  output: "OUTPUT",
-};
-
 interface WorkflowNodeProps {
   nodeId: string;
   kind: NodeKind;
@@ -60,18 +41,29 @@ export default function WorkflowNode({
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [isInView, prefersReduced, status]);
 
+  const isBranchOrMerge = kind === "branch" || kind === "merge";
+  const isTriggerOrOutput = kind === "trigger" || kind === "output";
+
+  // Accent border color based on status and accentColor
+  let accentBorderColor: string;
+  if (isTriggerOrOutput) {
+    accentBorderColor = "var(--bail-orange)";
+  } else if (accentColor === "cyan") {
+    accentBorderColor =
+      status === "done"    ? "var(--glow-cyan)" :
+      status === "running" ? "var(--glow-cyan)" :
+      "rgba(0,212,255,0.3)";
+  } else {
+    accentBorderColor =
+      status === "done"    ? "var(--status-done)" :
+      status === "running" ? "var(--bail-orange)" :
+      "rgba(237,130,28,0.3)";
+  }
+
   const borderColor =
     status === "running" ? "var(--node-border-running)" :
     status === "done"    ? "var(--node-border-done)" :
     "var(--node-border)";
-
-  const isOrange = accentColor === "orange";
-  const headerBg = isOrange
-    ? "rgba(237,130,28,0.08)"
-    : "rgba(0,212,255,0.06)";
-  const headerColor = isOrange ? "var(--bail-orange)" : "var(--glow-cyan)";
-
-  const isBranchOrMerge = kind === "branch" || kind === "merge";
 
   return (
     <div
@@ -90,11 +82,11 @@ export default function WorkflowNode({
         <div
           style={{
             position: "absolute",
-            top: -6,
+            top: -8,
             left: "50%",
             transform: "translateX(-50%)",
-            width: 12,
-            height: 12,
+            width: 16,
+            height: 16,
             borderRadius: "50%",
             background: "var(--ink-2)",
             border: `2px solid ${borderColor}`,
@@ -111,12 +103,14 @@ export default function WorkflowNode({
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         style={{
-          background: "var(--ink-3)",
+          background: "rgba(11,15,30,0.85)",
           border: `1px solid ${borderColor}`,
-          borderRadius: isBranchOrMerge ? 8 : 12,
-          transition: "border-color 0.4s ease",
+          borderLeft: `3px solid ${accentBorderColor}`,
+          borderRadius: 16,
+          transition: "border-color 0.4s ease, border-left-color 0.4s ease",
           overflow: "hidden",
           minHeight: h,
+          backdropFilter: "blur(8px)",
         }}
         onClick={expandable ? () => setExpanded(v => !v) : undefined}
         role={expandable ? "button" : undefined}
@@ -129,28 +123,24 @@ export default function WorkflowNode({
         } : undefined}
         aria-expanded={expandable ? expanded : undefined}
       >
-        {/* Header */}
-        <div style={{ background: headerBg, padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontSize: 11, color: headerColor }}>{kindIcon[kind]}</span>
-            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: headerColor, fontFamily: "monospace" }}>
-              {kindLabel[kind]}
-            </span>
-          </div>
-          {/* Status chip */}
+        {/* Status row at top */}
+        <div style={{ padding: "10px 18px 0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span style={{ fontSize: 11, fontFamily: "monospace", color: "rgba(255,255,255,0.2)", letterSpacing: "0.12em" }}>
+            {nodeId.toUpperCase()}
+          </span>
           <StatusChip status={status} />
         </div>
 
         {/* Body */}
         {!isBranchOrMerge && (
-          <div style={{ padding: "12px 14px" }}>
-            <p style={{ fontSize: 13, fontWeight: 700, color: "white", marginBottom: 6 }}>{title}</p>
+          <div style={{ padding: "8px 18px" }}>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "white", lineHeight: 1.3, marginBottom: 10 }}>{title}</p>
             {children}
           </div>
         )}
         {isBranchOrMerge && (
-          <div style={{ padding: "6px 12px", textAlign: "center" }}>
-            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "monospace" }}>{title}</p>
+          <div style={{ padding: "6px 14px", textAlign: "center" }}>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", fontFamily: "monospace" }}>{title}</p>
           </div>
         )}
 
@@ -165,7 +155,7 @@ export default function WorkflowNode({
               transition={{ duration: 0.25, ease: "easeOut" }}
               style={{ overflow: "hidden", borderTop: "1px solid rgba(255,255,255,0.05)" }}
             >
-              <div style={{ padding: "10px 14px" }}>
+              <div style={{ padding: "10px 18px" }}>
                 {expandContent}
               </div>
             </motion.div>
@@ -178,11 +168,11 @@ export default function WorkflowNode({
         <div
           style={{
             position: "absolute",
-            bottom: -6,
+            bottom: -8,
             left: "50%",
             transform: "translateX(-50%)",
-            width: 12,
-            height: 12,
+            width: 16,
+            height: 16,
             borderRadius: "50%",
             background: "var(--ink-2)",
             border: `2px solid ${borderColor}`,
@@ -209,7 +199,7 @@ function StatusChip({ status }: { status: Status }) {
   };
 
   return (
-    <span style={{ fontSize: 9, fontFamily: "monospace", padding: "2px 7px", borderRadius: 99, whiteSpace: "nowrap", transition: "all 0.3s", ...styles[status] }}>
+    <span style={{ fontSize: 12, fontFamily: "monospace", padding: "3px 10px", borderRadius: 99, whiteSpace: "nowrap", transition: "all 0.3s", ...styles[status] }}>
       {labels[status]}
     </span>
   );

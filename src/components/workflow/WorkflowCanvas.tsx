@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   motion,
   useScroll,
@@ -15,7 +15,7 @@ import DotGridBackground from "./DotGridBackground";
 import Button from "@/components/shared/Button";
 import AIChatDemo from "@/components/shared/AIChatDemo";
 import VoiceWaveform from "@/components/shared/VoiceWaveform";
-import { hero, stats, pillars, whyUs, caseStudy, techStack, cta, contact } from "@/content/catalog";
+import { hero, stats, pillars, whyUs, caseStudy, cta, contact } from "@/content/catalog";
 
 // --- Wire SVG layer (wires only) ---
 function WirePaths() {
@@ -142,12 +142,12 @@ function ContactForm() {
     borderRadius: 8,
     padding: "8px 12px",
     color: "white",
-    fontSize: 13,
+    fontSize: 16,
     outline: "none",
     boxSizing: "border-box",
   };
   const labelStyle: React.CSSProperties = {
-    fontSize: 11,
+    fontSize: 14,
     color: "rgba(255,255,255,0.5)",
     display: "block",
     marginBottom: 4,
@@ -209,7 +209,7 @@ function ContactForm() {
           borderRadius: 8,
           padding: "9px 18px",
           fontWeight: 700,
-          fontSize: 13,
+          fontSize: 16,
           cursor: "pointer",
           opacity: formStatus === "sending" ? 0.6 : 1,
         }}
@@ -217,7 +217,7 @@ function ContactForm() {
         {formStatus === "sending" ? "Sending…" : "Send message →"}
       </button>
       {formStatus === "error" && (
-        <p style={{ color: "#f87171", fontSize: 11 }}>
+        <p style={{ color: "#f87171", fontSize: 13 }}>
           Something went wrong — email us at {contact.email}
         </p>
       )}
@@ -227,13 +227,11 @@ function ContactForm() {
 
 // --- Canvas world (all nodes placed absolutely) ---
 function CanvasWorld() {
-  const allTools = techStack.flatMap(g => g.tools);
-
   const stickyNotes = [
-    { ...whyUs[0], x: 120, y: 440, rotate: -1.5 },
-    { ...whyUs[1], x: 1480, y: 440, rotate: 1.2 },
-    { ...whyUs[2], x: 120, y: 2000, rotate: -0.8 },
-    { ...whyUs[3], x: 1480, y: 2000, rotate: 1.5 },
+    { ...whyUs[0], x: 80,  y: 920,  rotate: -1.5 },
+    { ...whyUs[1], x: 920, y: 920,  rotate: 1.2  },
+    { ...whyUs[2], x: 80,  y: 2840, rotate: -0.8 },
+    { ...whyUs[3], x: 920, y: 2840, rotate: 1.5  },
   ];
 
   return (
@@ -252,10 +250,10 @@ function CanvasWorld() {
         w={getNode("trigger").w}
         h={getNode("trigger").h}
       >
-        <p style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 10 }}>
+        <p style={{ fontSize: 16, color: "rgba(255,255,255,0.5)", marginBottom: 14 }}>
           {hero.subheadline}
         </p>
-        <Button label={hero.cta.label} href="/#contact" variant="primary" size="md" />
+        <Button label={hero.cta.label} href="/#contact" variant="primary" size="lg" />
       </WorkflowNode>
 
       {/* === QUALIFY node === */}
@@ -268,11 +266,11 @@ function CanvasWorld() {
         w={getNode("qualify").w}
         h={getNode("qualify").h}
       >
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 12px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 16px" }}>
           {stats.slice(0, 4).map(s => (
             <div key={s.label} style={{ display: "flex", flexDirection: "column" }}>
-              <span style={{ fontSize: 16, fontWeight: 800, color: "white" }}>{s.value}</span>
-              <span style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", lineHeight: 1.3 }}>{s.label}</span>
+              <span style={{ fontSize: 28, fontWeight: 800, color: "white" }}>{s.value}</span>
+              <span style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", lineHeight: 1.3 }}>{s.label}</span>
             </div>
           ))}
         </div>
@@ -307,24 +305,24 @@ function CanvasWorld() {
             expandable
             expandContent={
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <p style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Problem</p>
-                <p style={{ fontSize: 10, color: "rgba(255,255,255,0.65)" }}>{svc.problem}</p>
-                <p style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 4 }}>Solution</p>
-                <p style={{ fontSize: 10, color: "rgba(255,255,255,0.65)" }}>{svc.solution}</p>
+                <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Problem</p>
+                <p style={{ fontSize: 16, color: "rgba(255,255,255,0.65)" }}>{svc.problem}</p>
+                <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 4 }}>Solution</p>
+                <p style={{ fontSize: 16, color: "rgba(255,255,255,0.65)" }}>{svc.solution}</p>
               </div>
             }
           >
-            <p style={{ fontSize: 10, color: "var(--bail-orange)", marginBottom: 6 }}>{svc.hook}</p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
+            <p style={{ fontSize: 16, color: "var(--bail-orange)", marginBottom: 8 }}>{svc.hook}</p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
               {svc.whatWeBuild.slice(0, 3).map(item => (
                 <span
                   key={item}
                   style={{
-                    fontSize: 9,
+                    fontSize: 13,
                     background: "rgba(255,255,255,0.05)",
                     border: "1px solid rgba(255,255,255,0.08)",
                     borderRadius: 99,
-                    padding: "2px 6px",
+                    padding: "3px 8px",
                     color: "rgba(255,255,255,0.5)",
                   }}
                 >
@@ -337,11 +335,11 @@ function CanvasWorld() {
       })}
 
       {/* === Automate lane label === */}
-      <div style={{ position: "absolute", left: 140, top: 820, textAlign: "center", width: 240, zIndex: 2 }}>
-        <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", color: "rgba(237,130,28,0.7)", textTransform: "uppercase" }}>
+      <div style={{ position: "absolute", left: 60, top: 1420, textAlign: "center", width: 240, zIndex: 2 }}>
+        <p style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.15em", color: "rgba(237,130,28,0.7)", textTransform: "uppercase" }}>
           ⚙ Automate
         </p>
-        <p style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>Replace manual work</p>
+        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.3)" }}>Replace manual work</p>
       </div>
 
       {/* === GROW lane (right 4) === */}
@@ -362,24 +360,24 @@ function CanvasWorld() {
             expandable
             expandContent={
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <p style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Problem</p>
-                <p style={{ fontSize: 10, color: "rgba(255,255,255,0.65)" }}>{svc.problem}</p>
-                <p style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 4 }}>Solution</p>
-                <p style={{ fontSize: 10, color: "rgba(255,255,255,0.65)" }}>{svc.solution}</p>
+                <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Problem</p>
+                <p style={{ fontSize: 16, color: "rgba(255,255,255,0.65)" }}>{svc.problem}</p>
+                <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 4 }}>Solution</p>
+                <p style={{ fontSize: 16, color: "rgba(255,255,255,0.65)" }}>{svc.solution}</p>
               </div>
             }
           >
-            <p style={{ fontSize: 10, color: "var(--glow-cyan)", marginBottom: 6 }}>{svc.hook}</p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
+            <p style={{ fontSize: 16, color: "var(--glow-cyan)", marginBottom: 8 }}>{svc.hook}</p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
               {svc.whatWeBuild.slice(0, 3).map(item => (
                 <span
                   key={item}
                   style={{
-                    fontSize: 9,
+                    fontSize: 13,
                     background: "rgba(0,212,255,0.04)",
                     border: "1px solid rgba(0,212,255,0.1)",
                     borderRadius: 99,
-                    padding: "2px 6px",
+                    padding: "3px 8px",
                     color: "rgba(0,212,255,0.6)",
                   }}
                 >
@@ -392,11 +390,11 @@ function CanvasWorld() {
       })}
 
       {/* === Grow lane label === */}
-      <div style={{ position: "absolute", left: 1100, top: 820, textAlign: "center", width: 240, zIndex: 2 }}>
-        <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", color: "rgba(0,212,255,0.7)", textTransform: "uppercase" }}>
+      <div style={{ position: "absolute", left: 860, top: 1420, textAlign: "center", width: 240, zIndex: 2 }}>
+        <p style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.15em", color: "rgba(0,212,255,0.7)", textTransform: "uppercase" }}>
           📈 Grow
         </p>
-        <p style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>Fill your pipeline</p>
+        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.3)" }}>Fill your pipeline</p>
       </div>
 
       {/* === MERGE === */}
@@ -422,13 +420,13 @@ function CanvasWorld() {
       >
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
           <div style={{ flex: 1, minWidth: 200 }}>
-            <p style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.1em" }}>
               AI Chatbot · Live
             </p>
             <AIChatDemo />
           </div>
           <div style={{ flex: 1, minWidth: 180, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
-            <p style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
               Voice AI · Active call
             </p>
             <VoiceWaveform />
@@ -446,41 +444,12 @@ function CanvasWorld() {
         w={getNode("prove").w}
         h={getNode("prove").h}
       >
-        <p style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", marginBottom: 4 }}>
+        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 6 }}>
           {caseStudy.client}
         </p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
           {caseStudy.outcomes.slice(0, 3).map(o => (
-            <span key={o} style={{ fontSize: 9, color: "rgba(34,197,94,0.8)" }}>✓ {o}</span>
-          ))}
-        </div>
-      </WorkflowNode>
-
-      {/* === INTEGRATIONS node === */}
-      <WorkflowNode
-        nodeId="integrations"
-        kind="action"
-        title="Integrations — 30+ tools"
-        x={getNode("integrations").x}
-        y={getNode("integrations").y}
-        w={getNode("integrations").w}
-        h={getNode("integrations").h}
-      >
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-          {allTools.slice(0, 8).map(tool => (
-            <span
-              key={tool}
-              style={{
-                fontSize: 9,
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: 4,
-                padding: "2px 6px",
-                color: "rgba(255,255,255,0.5)",
-              }}
-            >
-              {tool}
-            </span>
+            <span key={o} style={{ fontSize: 16, color: "rgba(34,197,94,0.8)" }}>✓ {o}</span>
           ))}
         </div>
       </WorkflowNode>
@@ -495,7 +464,7 @@ function CanvasWorld() {
         w={getNode("ship").w}
         h={getNode("ship").h}
       >
-        <p style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", marginBottom: 10 }}>
+        <p style={{ fontSize: 16, color: "rgba(255,255,255,0.5)", marginBottom: 12 }}>
           {cta.subheadline}
         </p>
         <ContactForm />
@@ -522,9 +491,9 @@ function CanvasWorld() {
         style={{
           position: "absolute",
           left: 50,
-          top: 300,
+          top: 600,
           color: "rgba(255,255,255,0.1)",
-          fontSize: 80,
+          fontSize: 120,
           fontWeight: 900,
           lineHeight: 1,
           userSelect: "none",
@@ -538,9 +507,9 @@ function CanvasWorld() {
         style={{
           position: "absolute",
           left: 50,
-          top: 820,
+          top: 1400,
           color: "rgba(255,255,255,0.05)",
-          fontSize: 80,
+          fontSize: 120,
           fontWeight: 900,
           lineHeight: 1,
           userSelect: "none",
@@ -554,9 +523,9 @@ function CanvasWorld() {
         style={{
           position: "absolute",
           left: 50,
-          top: 2350,
+          top: 3200,
           color: "rgba(255,255,255,0.05)",
-          fontSize: 80,
+          fontSize: 120,
           fontWeight: 900,
           lineHeight: 1,
           userSelect: "none",
@@ -636,6 +605,20 @@ export default function WorkflowCanvas() {
   const prefersReduced = useReducedMotion();
   const [isMobileNarrow, setIsMobileNarrow] = useState(false);
 
+  // SSR-safe viewport dimensions — default before hydration
+  const [viewportW, setViewportW] = useState(1200);
+  const [viewportH, setViewportH] = useState(900);
+
+  useEffect(() => {
+    const onResize = () => {
+      setViewportW(window.innerWidth);
+      setViewportH(window.innerHeight);
+    };
+    window.addEventListener("resize", onResize);
+    onResize();
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
   React.useEffect(() => {
     const mq = window.matchMedia("(max-width: 640px)");
     setIsMobileNarrow(mq.matches);
@@ -656,17 +639,16 @@ export default function WorkflowCanvas() {
   // Compute camera x, y, scale from waypoints using useTransform
   const progressValues = waypoints.map(w => w.progress);
 
-  // Lens center — use fixed 800×450 for SSR safety
-  const LCX = 800;
-  const LCY = 450;
-  const worldXValues = waypoints.map(w => {
-    const n = nodes.find(n => n.id === w.nodeId)!;
-    return LCX - n.x * w.scale;
-  });
+  // Camera X is ALWAYS locked to center the world horizontally.
+  // It never moves left/right — only scale and Y change.
+  const worldXValues = waypoints.map(w => viewportW / 2 - (WORLD_W / 2) * w.scale);
+
+  // Camera Y centers the target node vertically in the viewport
   const worldYValues = waypoints.map(w => {
     const n = nodes.find(n => n.id === w.nodeId)!;
-    return LCY - n.y * w.scale;
+    return viewportH / 2 - n.y * w.scale;
   });
+
   const scaleValues = waypoints.map(w => w.scale);
 
   const cameraX = useTransform(smoothProgress, progressValues, worldXValues);
@@ -762,4 +744,3 @@ export default function WorkflowCanvas() {
     </div>
   );
 }
-
