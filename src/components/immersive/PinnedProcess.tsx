@@ -1,25 +1,46 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
-import { motion, useInView, useReducedMotion } from "framer-motion";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import React, { useRef } from "react";
+import {
+  motion,
+  useScroll,
+  useSpring,
+  useTransform,
+  useReducedMotion,
+  MotionValue,
+} from "framer-motion";
 import { process } from "@/content/catalog";
 
-// ----- Reduced-motion fallback: simple vertical list -----
-function StaticProcess() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
+// Thresholds at which each node lights up
+const NODE_THRESHOLDS: [number, number, number][] = [
+  [0, 0.2, 0.4],
+  [0.3, 0.5, 0.7],
+  [0.6, 0.8, 1.0],
+];
 
+// Static fallback for reduced-motion preference
+function StaticProcess() {
   return (
     <section
       id="process"
-      ref={ref}
-      className="bg-[var(--ink)] py-28 px-6"
       aria-labelledby="process-heading"
+      className="bg-[var(--ink)] py-32 px-6 overflow-hidden relative"
     >
-      <div className="max-w-5xl mx-auto">
-        <div className="mb-16 text-center">
+      {/* Aurora blobs */}
+      <div
+        className="aurora-blob absolute top-0 right-0 w-[400px] h-[400px] pointer-events-none"
+        style={{ background: "rgba(237,130,28,0.10)", animationDelay: "-2s" }}
+        aria-hidden="true"
+      />
+      <div
+        className="aurora-blob absolute bottom-0 left-0 w-[350px] h-[350px] pointer-events-none"
+        style={{ background: "rgba(61,69,168,0.15)", animationDelay: "-6s" }}
+        aria-hidden="true"
+      />
+
+      <div className="max-w-3xl mx-auto relative z-10">
+        {/* Heading */}
+        <div className="mb-16">
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-bail-orange mb-3 block">
             Our Process
           </span>
@@ -27,163 +48,37 @@ function StaticProcess() {
             id="process-heading"
             className="text-4xl md:text-5xl font-bold text-white leading-tight"
           >
-            From scope to live system in weeks
+            A different way to build AI.
           </h2>
         </div>
-        <div className="flex flex-col gap-16">
-          {process.map((step, i) => (
-            <motion.div
-              key={step.number}
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-              transition={{ duration: 0.55, delay: i * 0.15, ease: "easeOut" }}
-              className="flex flex-col gap-4 relative pl-8"
-            >
-              <div className="w-12 h-0.5 bg-bail-orange rounded-full absolute left-0 top-3" />
-              <span className="text-7xl font-bold text-white/5 leading-none select-none absolute -top-4 left-0">
-                {step.number}
-              </span>
-              <h3 className="text-3xl font-bold text-white mt-8">{step.title}</h3>
-              <p className="text-lg text-white/60 max-w-xl leading-relaxed">{step.description}</p>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
-// ----- GSAP pinned section -----
-export default function PinnedProcess() {
-  const prefersReduced = useReducedMotion();
-  const outerRef = useRef<HTMLDivElement>(null);
-  const stickyRef = useRef<HTMLDivElement>(null);
-  const panelsRef = useRef<(HTMLDivElement | null)[]>([]);
-  const tlRef = useRef<gsap.core.Timeline | null>(null);
-
-  useEffect(() => {
-    if (prefersReduced) return;
-
-    gsap.registerPlugin(ScrollTrigger);
-
-    const ctx = gsap.context(() => {
-      const panels = panelsRef.current.filter(Boolean) as HTMLDivElement[];
-
-      // Set all panels to initial state
-      gsap.set(panels, { opacity: 0, y: 60 });
-      gsap.set(panels[0], { opacity: 1, y: 0 });
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: outerRef.current,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 1,
-          pin: stickyRef.current,
-          pinSpacing: false,
-          anticipatePin: 1,
-        },
-      });
-
-      tlRef.current = tl;
-
-      // Step 0 → 1
-      tl.to(panels[0], { opacity: 0, y: -60, duration: 0.4, ease: "power2.in" }, 0.1)
-        .to(panels[1], { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 0.3);
-
-      // Step 1 → 2
-      tl.to(panels[1], { opacity: 0, y: -60, duration: 0.4, ease: "power2.in" }, 0.6)
-        .to(panels[2], { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 0.8);
-    }, outerRef);
-
-    return () => {
-      ctx.revert();
-    };
-  }, [prefersReduced]);
-
-  if (prefersReduced) {
-    return <StaticProcess />;
-  }
-
-  return (
-    <section
-      id="process"
-      aria-labelledby="process-heading"
-      className="bg-[var(--ink)]"
-    >
-      {/* Tall outer wrapper — 300vh for scroll travel */}
-      <div ref={outerRef} style={{ height: "300vh", position: "relative" }}>
-        {/* Sticky container — pinned to screen height */}
-        <div
-          ref={stickyRef}
-          className="sticky top-0 h-screen overflow-hidden flex items-center justify-center"
-        >
-          {/* Background aurora blobs */}
+        {/* Steps */}
+        <div className="relative">
+          {/* Faint rail */}
           <div
-            className="aurora-blob absolute top-[-20%] right-[-10%] w-[600px] h-[600px]"
-            style={{ background: "rgba(237,130,28,0.10)", animationDelay: "-2s" }}
-            aria-hidden="true"
-          />
-          <div
-            className="aurora-blob absolute bottom-[-15%] left-[-5%] w-[500px] h-[500px]"
-            style={{ background: "rgba(61,69,168,0.18)", animationDelay: "-6s" }}
+            className="absolute left-[27px] top-0 bottom-0 w-px bg-white/8"
             aria-hidden="true"
           />
 
-          {/* Section label */}
-          <div className="absolute top-16 left-1/2 -translate-x-1/2 text-center z-10">
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-bail-orange">
-              Our Process
-            </span>
-          </div>
-
-          {/* Progress indicator */}
-          <div className="absolute right-8 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-10 hidden lg:flex">
+          <div className="flex flex-col gap-20">
             {process.map((step) => (
-              <div
-                key={step.number}
-                className="w-1.5 h-1.5 rounded-full bg-white/20"
-                aria-hidden="true"
-              />
-            ))}
-          </div>
-
-          {/* Step panels — absolutely stacked */}
-          <div className="relative w-full max-w-4xl mx-auto px-8 md:px-16">
-            {process.map((step, i) => (
-              <div
-                key={step.number}
-                ref={(el) => { panelsRef.current[i] = el; }}
-                className="absolute inset-0 flex flex-col justify-center will-change-transform"
-                style={{ position: i === 0 ? "relative" : "absolute", top: 0, left: 0, right: 0 }}
-              >
-                {/* Giant background number */}
-                <span
-                  className="absolute -top-8 -left-4 md:-left-8 text-[clamp(8rem,20vw,18rem)] font-bold leading-none select-none"
-                  style={{ color: "rgba(255,255,255,0.03)" }}
-                  aria-hidden="true"
-                >
-                  {step.number}
-                </span>
-
+              <div key={step.number} className="flex items-start gap-8 relative">
+                {/* Node */}
+                <div className="w-14 h-14 flex-shrink-0 flex items-center justify-center rounded-full border border-bail-orange/20 relative">
+                  <div
+                    className="w-3 h-3 rounded-full bg-bail-orange"
+                    style={{ boxShadow: "0 0 12px rgba(237,130,28,0.8)" }}
+                  />
+                </div>
                 {/* Content */}
-                <div className="relative z-10 flex flex-col gap-6">
-                  {/* Orange accent line */}
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-0.5 bg-bail-orange rounded-full" />
-                    <span className="text-bail-orange font-mono text-sm font-bold tracking-widest">
-                      {step.number}
-                    </span>
-                  </div>
-
-                  <h2
-                    id={i === 0 ? "process-heading" : undefined}
-                    className="text-5xl md:text-7xl font-bold text-white leading-tight"
-                  >
+                <div className="pt-3">
+                  <p className="text-xs font-mono text-bail-orange/50 mb-1 tracking-widest">
+                    {step.number}
+                  </p>
+                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-3">
                     {step.title}
-                  </h2>
-
-                  <p className="text-lg md:text-xl text-white/60 max-w-xl leading-relaxed">
+                  </h3>
+                  <p className="text-white/60 leading-relaxed text-lg max-w-lg">
                     {step.description}
                   </p>
                 </div>
@@ -191,7 +86,197 @@ export default function PinnedProcess() {
             ))}
           </div>
         </div>
+
+        {/* Closing line */}
+        <p className="mt-20 text-center text-white/50 italic text-lg">
+          &ldquo;You own everything — code, models, infrastructure — from day one.&rdquo;
+        </p>
       </div>
     </section>
   );
+}
+
+// Individual animated step — all derived MotionValues passed in from parent
+function ProcessStep({
+  step,
+  nodeOpacity,
+  ringBorderColor,
+  dotBoxShadow,
+}: {
+  step: (typeof process)[number];
+  nodeOpacity: MotionValue<number>;
+  ringBorderColor: MotionValue<string>;
+  dotBoxShadow: MotionValue<string>;
+}) {
+  return (
+    <div className="flex items-start gap-8 relative">
+      {/* Glowing node */}
+      <motion.div
+        className="w-14 h-14 flex-shrink-0 flex items-center justify-center rounded-full border border-bail-orange/20 relative"
+        style={{ opacity: nodeOpacity }}
+      >
+        {/* Ring brightens as beam arrives */}
+        <motion.div
+          className="absolute inset-0 rounded-full border"
+          style={{ borderColor: ringBorderColor }}
+        />
+        <motion.div
+          className="w-3 h-3 rounded-full bg-bail-orange"
+          style={{ boxShadow: dotBoxShadow }}
+        />
+      </motion.div>
+
+      {/* Content fades in with the node */}
+      <motion.div className="pt-3" style={{ opacity: nodeOpacity }}>
+        <p className="text-xs font-mono text-bail-orange/50 mb-1 tracking-widest">
+          {step.number}
+        </p>
+        <h3 className="text-3xl md:text-4xl font-bold text-white mb-3">
+          {step.title}
+        </h3>
+        <p className="text-white/60 leading-relaxed text-lg max-w-lg">
+          {step.description}
+        </p>
+      </motion.div>
+    </div>
+  );
+}
+
+// All motion values for a single step, derived from a shared smoothProgress
+function useStepValues(
+  smoothProgress: MotionValue<number>,
+  thresholds: [number, number, number]
+): {
+  nodeOpacity: MotionValue<number>;
+  ringBorderColor: MotionValue<string>;
+  dotBoxShadow: MotionValue<string>;
+} {
+  const nodeOpacity = useTransform(smoothProgress, thresholds, [0.3, 1, 1]);
+  const ringBorderColor = useTransform(
+    smoothProgress,
+    thresholds,
+    [
+      "rgba(237,130,28,0)",
+      "rgba(237,130,28,0.5)",
+      "rgba(237,130,28,0.5)",
+    ]
+  );
+  const dotBoxShadow = useTransform(
+    smoothProgress,
+    thresholds,
+    [
+      "0 0 4px rgba(237,130,28,0.3)",
+      "0 0 16px rgba(237,130,28,0.9)",
+      "0 0 16px rgba(237,130,28,0.9)",
+    ]
+  );
+  return { nodeOpacity, ringBorderColor, dotBoxShadow };
+}
+
+// Main animated component
+function AnimatedProcess() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start 0.7", "end 0.3"],
+  });
+
+  const smoothProgress = useSpring(scrollYProgress, {
+    damping: 30,
+    stiffness: 80,
+  });
+
+  const beamHeight = useTransform(smoothProgress, [0, 1], ["0%", "100%"]);
+
+  // Derive all per-step motion values at hook level (Rules of Hooks safe — fixed array)
+  const step0 = useStepValues(smoothProgress, NODE_THRESHOLDS[0]);
+  const step1 = useStepValues(smoothProgress, NODE_THRESHOLDS[1]);
+  const step2 = useStepValues(smoothProgress, NODE_THRESHOLDS[2]);
+
+  const stepValues = [step0, step1, step2];
+
+  return (
+    <section
+      id="process"
+      ref={sectionRef}
+      aria-labelledby="process-heading"
+      className="bg-[var(--ink)] py-32 px-6 overflow-hidden relative"
+    >
+      {/* Aurora blobs */}
+      <div
+        className="aurora-blob absolute top-0 right-0 w-[400px] h-[400px] pointer-events-none"
+        style={{ background: "rgba(237,130,28,0.10)", animationDelay: "-2s" }}
+        aria-hidden="true"
+      />
+      <div
+        className="aurora-blob absolute bottom-0 left-0 w-[350px] h-[350px] pointer-events-none"
+        style={{ background: "rgba(61,69,168,0.15)", animationDelay: "-6s" }}
+        aria-hidden="true"
+      />
+
+      <div className="max-w-3xl mx-auto relative z-10">
+        {/* Heading */}
+        <div className="mb-16">
+          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-bail-orange mb-3 block">
+            Our Process
+          </span>
+          <h2
+            id="process-heading"
+            className="text-4xl md:text-5xl font-bold text-white leading-tight"
+          >
+            A different way to build AI.
+          </h2>
+        </div>
+
+        {/* Timeline */}
+        <div className="relative">
+          {/* Faint full-height rail */}
+          <div
+            className="absolute left-[27px] top-0 bottom-0 w-px bg-white/8"
+            aria-hidden="true"
+          />
+
+          {/* Animated glowing beam grows as section scrolls */}
+          <motion.div
+            className="absolute left-[27px] top-0 w-px"
+            style={{
+              height: beamHeight,
+              background:
+                "linear-gradient(to bottom, rgba(237,130,28,1), rgba(237,130,28,0))",
+            }}
+            aria-hidden="true"
+          />
+
+          {/* Steps */}
+          <div className="flex flex-col gap-20">
+            {process.map((step, i) => (
+              <ProcessStep
+                key={step.number}
+                step={step}
+                nodeOpacity={stepValues[i].nodeOpacity}
+                ringBorderColor={stepValues[i].ringBorderColor}
+                dotBoxShadow={stepValues[i].dotBoxShadow}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Closing quote */}
+        <p className="mt-20 text-center text-white/50 italic text-lg">
+          &ldquo;You own everything — code, models, infrastructure — from day one.&rdquo;
+        </p>
+      </div>
+    </section>
+  );
+}
+
+export default function PinnedProcess() {
+  const prefersReduced = useReducedMotion();
+
+  if (prefersReduced) {
+    return <StaticProcess />;
+  }
+
+  return <AnimatedProcess />;
 }
