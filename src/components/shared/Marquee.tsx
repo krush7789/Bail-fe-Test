@@ -26,7 +26,7 @@ export default function Marquee({
   const doubled = [...items, ...items];
 
   return (
-    <div className={`overflow-hidden w-full ${className}`}>
+    <div className={`overflow-hidden w-full ${className}`} aria-hidden="true">
       <div
         className={trackClass}
         style={{ animationDuration: duration }}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useMemo } from "react";
 import { useInView } from "framer-motion";
 
 interface AnimatedCounterProps {
@@ -25,7 +25,7 @@ export default function AnimatedCounter({
   const [displayed, setDisplayed] = useState<string>(value);
   const hasAnimated = useRef(false);
 
-  const parsed = parseValue(value);
+  const parsed = useMemo(() => parseValue(value), [value]);
 
   useEffect(() => {
     if (!isInView || hasAnimated.current || !parsed) return;
@@ -42,6 +42,7 @@ export default function AnimatedCounter({
     const suffix = parsed.suffix;
     const duration = 1500; // ms
     const startTime = performance.now();
+    let rafId: number;
 
     function easeOut(t: number): number {
       return 1 - Math.pow(1 - t, 3);
@@ -53,11 +54,12 @@ export default function AnimatedCounter({
       const current = Math.round(easeOut(progress) * target);
       setDisplayed(`${current}${suffix}`);
       if (progress < 1) {
-        requestAnimationFrame(frame);
+        rafId = requestAnimationFrame(frame);
       }
     }
 
-    requestAnimationFrame(frame);
+    rafId = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(rafId);
   }, [isInView, parsed, value]);
 
   return (

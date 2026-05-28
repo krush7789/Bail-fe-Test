@@ -81,6 +81,7 @@ export default function AIChatDemo() {
       for (let c = 1; c <= msg.text.length; c++) {
         if (stopped.current) break;
         await new Promise<void>((resolve) => setTimeout(resolve, CHAR_DELAY));
+        if (stopped.current) return;
         setVisibleMessages((prev) => {
           const updated = [...prev];
           updated[updated.length - 1] = {
@@ -107,6 +108,7 @@ export default function AIChatDemo() {
       // Gap before next message
       if (i < SCRIPT.length - 1) {
         await new Promise<void>((resolve) => setTimeout(resolve, MESSAGE_GAP));
+        if (stopped.current) return;
       }
     }
 
@@ -114,11 +116,15 @@ export default function AIChatDemo() {
     animating.current = false;
     if (!stopped.current) {
       await new Promise<void>((resolve) => setTimeout(resolve, LOOP_DELAY));
+      if (stopped.current) return;
       runScript();
     }
   }, []);
 
   useEffect(() => {
+    stopped.current = false;
+    animating.current = false;
+
     if (prefersReducedMotion) {
       // Show all messages statically
       setVisibleMessages(

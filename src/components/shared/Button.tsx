@@ -20,7 +20,7 @@ export default function Button({
   className = "",
 }: ButtonProps) {
   const base =
-    "inline-flex items-center justify-center rounded-full font-semibold transition-transform duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-bail-orange cursor-pointer";
+    "inline-flex items-center justify-center rounded-full font-semibold transition-transform duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[var(--ink)] focus:ring-bail-orange cursor-pointer";
 
   const sizeClasses = size === "lg" ? "px-8 py-4 text-base" : "px-6 py-3 text-sm";
 
