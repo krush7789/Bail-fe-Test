@@ -178,3 +178,56 @@ html {
     transition: none !important;
   }
 }
+
+/* === /workflow canvas tokens === */
+:root {
+  --wire-color: rgba(255,255,255,0.12);
+  --wire-active: #ed821c;
+  --status-waiting: rgba(255,255,255,0.25);
+  --status-running: #ed821c;
+  --status-done: #22c55e;
+  --node-border: rgba(255,255,255,0.08);
+  --node-border-running: rgba(237,130,28,0.6);
+  --node-border-done: rgba(34,197,94,0.4);
+  --dot-grid-color: rgba(255,255,255,0.04);
+}
+
+/* Dot-grid canvas background */
+.dot-grid {
+  background-image: radial-gradient(circle, var(--dot-grid-color) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Flowing packet animation along offset-path */
+@keyframes packet-flow {
+  0%   { offset-distance: 0%; opacity: 0.9; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+
+.packet {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--bail-orange);
+  box-shadow: 0 0 10px 3px rgba(237,130,28,0.6);
+  animation: packet-flow 2.4s ease-in-out infinite;
+  will-change: offset-distance;
+  pointer-events: none;
+}
+
+.packet-cyan {
+  background: var(--glow-cyan);
+  box-shadow: 0 0 10px 3px rgba(0,212,255,0.6);
+}
+
+/* Node status border transitions */
+.node-waiting  { border-color: var(--node-border); }
+.node-running  { border-color: var(--node-border-running); }
+.node-done     { border-color: var(--node-border-done); }
+
+@media (prefers-reduced-motion: reduce) {
+  .packet { animation: none !important; display: none; }
+}
