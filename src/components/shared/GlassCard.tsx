@@ -13,16 +13,16 @@ interface GlassCardProps {
 }
 
 const glowMap: Record<GlowColor, string> = {
-  orange: "0 0 40px rgba(237,130,28,0.15)",
-  navy: "0 0 40px rgba(61,69,168,0.2)",
-  cyan: "0 0 40px rgba(0,212,255,0.15)",
+  orange: "none",
+  navy: "none",
+  cyan: "none",
   none: "none",
 };
 
 const glowHoverMap: Record<GlowColor, string> = {
-  orange: "0 0 60px rgba(237,130,28,0.3)",
-  navy: "0 0 60px rgba(61,69,168,0.35)",
-  cyan: "0 0 60px rgba(0,212,255,0.3)",
+  orange: "none",
+  navy: "none",
+  cyan: "none",
   none: "none",
 };
 

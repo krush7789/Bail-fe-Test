@@ -40,7 +40,7 @@ const LOOP_DELAY = 3000; // ms before restarting
 
 export default function AIChatDemo() {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [visibleMessages, setVisibleMessages] = useState<
     { role: "user" | "ai"; text: string; partial: boolean }[]
   >([]);
@@ -54,8 +54,8 @@ export default function AIChatDemo() {
   }, []);
 
   const scrollToBottom = () => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
     }
   };
 
@@ -173,7 +173,7 @@ export default function AIChatDemo() {
       </div>
 
       {/* Messages */}
-      <div className="px-4 py-4 flex flex-col gap-3 max-h-80 overflow-y-auto">
+      <div ref={messagesContainerRef} className="px-4 py-4 flex flex-col gap-3 max-h-80 overflow-y-auto">
         {visibleMessages.map((msg, idx) => (
           <div
             key={idx}
@@ -196,7 +196,7 @@ export default function AIChatDemo() {
             <span className="text-[10px] text-white/30 px-1">just now</span>
           </div>
         ))}
-        <div ref={messagesEndRef} />
+        <div />
       </div>
     </div>
   );
