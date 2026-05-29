@@ -19,7 +19,7 @@ export const hero = {
 // Stats band
 export const stats = [
   { value: "100%", label: "Client ownership of all code & infrastructure" },
-  { value: "8",    label: "Productized services ready to deploy" },
+  { value: "9",    label: "Productized services ready to deploy" },
   { value: "2 wks", label: "Typical time from scope to live system" },
   { value: "3×",   label: "Faster than building an equivalent in-house team" },
   { value: "24/7", label: "Always-on systems — no office hours, no downtime" },
@@ -86,6 +86,15 @@ export const pillars: Pillar[] = [
         whatWeBuild: ["Document ingestion pipeline", "Vector database (Pinecone)", "LLM synthesis with citations", "Web / portal chat UI", "Auto-sync connector"],
         outcome: "Any team member gets accurate, cited answers from internal knowledge in seconds — not hours.",
       },
+      {
+        id: 5,
+        title: "Custom AI Solution",
+        hook: "A bespoke AI system engineered around your business — built to cut costs and multiply output",
+        problem: "Off-the-shelf AI tools don't fit how your team operates. You're leaving efficiency gains on the table because nothing is built for your exact workflows.",
+        solution: "We audit your entire operation end-to-end, identify the highest-impact AI opportunities, then design and build a custom system — from data pipelines to LLM integrations — tailored precisely to your needs.",
+        whatWeBuild: ["Business process audit", "Custom AI architecture", "LLM fine-tuning & integration", "Workflow & API automation", "ROI measurement dashboard"],
+        outcome: "A purpose-built AI system that compounds in value over time — reducing operational costs, eliminating bottlenecks, and multiplying team output.",
+      },
     ],
   },
   {
@@ -94,7 +103,7 @@ export const pillars: Pillar[] = [
     tagline: "Fill your pipeline and scale your presence",
     services: [
       {
-        id: 5,
+        id: 6,
         title: "Lead Generation & Qualification",
         hook: "Fill your pipeline with pre-qualified prospects — automatically",
         problem: "Your sales team spends 60% of their time on research and chasing leads that will never buy.",
@@ -103,7 +112,7 @@ export const pillars: Pillar[] = [
         outcome: "Pre-qualified meetings delivered to your calendar. Your team only has conversations that can close.",
       },
       {
-        id: 6,
+        id: 7,
         title: "Sales Outreach Automation",
         hook: "Run a 24/7 outbound engine without hiring a single SDR",
         problem: "Manual cold outreach is inconsistent, lands in spam, and stops the moment your team is busy.",
@@ -112,7 +121,7 @@ export const pillars: Pillar[] = [
         outcome: "Warm, pre-qualified conversations delivered to your team — with full context already in CRM.",
       },
       {
-        id: 7,
+        id: 8,
         title: "WhatsApp & Chat Lead Nurturing",
         hook: "Respond to every inbound lead in 5 seconds — follow up for 14 days",
         problem: "Most leads go cold within 72 hours of ad click. Manual WhatsApp follow-up does not scale.",
@@ -121,7 +130,7 @@ export const pillars: Pillar[] = [
         outcome: "Every inbound lead nurtured automatically. Your team gets only the conversations worth having.",
       },
       {
-        id: 8,
+        id: 9,
         title: "Social Media Content Automation",
         hook: "Publish daily content on every platform — without your team touching it",
         problem: "Consistent content creation consumes 15+ hours per week and breaks whenever the team gets busy.",
