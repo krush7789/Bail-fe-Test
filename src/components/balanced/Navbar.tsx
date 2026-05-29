@@ -37,8 +37,10 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group" aria-label={`${brand.name} — home`}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.gif" alt={`${brand.name} logo`} width={32} height={32} className="rounded-md" />
+          <span className="flex items-center justify-center bg-white rounded-lg p-1.5 shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.gif" alt={`${brand.name} logo`} width={28} height={28} className="block" />
+          </span>
           <span className="text-white font-semibold text-base group-hover:text-bail-orange transition-colors duration-200">
             {brand.name}
           </span>
