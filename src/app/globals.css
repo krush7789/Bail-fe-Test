@@ -8,6 +8,30 @@
   --bail-surface: #f8f8f8;
   --bail-border: #e8e8e8;
   --bail-muted: #6b7280;
+
+  /* Dark canvas */
+  --ink: #080c1a;             /* deep navy-black hero bg */
+  --ink-2: #0d1224;           /* slightly elevated dark surface */
+  --ink-3: #111829;           /* card/panel bg in dark sections */
+
+  /* Glow & aurora palette */
+  --glow-orange: #ed821c;     /* same as bail-orange, used for glows */
+  --glow-navy: #3d45a8;       /* brightened navy for aurora */
+  --glow-cyan: #00d4ff;       /* cyan accent for aurora tertiary */
+  --glow-violet: #7c3aed;     /* violet accent for depth */
+
+  /* shadcn Card tokens */
+  --card: #0a0a0a;
+  --card-foreground: #fafafa;
+  --muted-foreground: #a1a1aa;
+
+  /* Grain */
+  --grain-opacity: 0.035;
+
+  /* Glass surface */
+  --glass-bg: rgba(255,255,255,0.04);
+  --glass-border: rgba(255,255,255,0.08);
+  --glass-highlight: rgba(255,255,255,0.12);
 }
 
 @theme inline {
@@ -15,6 +39,21 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-bail-orange: var(--bail-orange);
+  --color-bail-navy: var(--bail-navy);
+  --color-bail-surface: var(--bail-surface);
+  --color-bail-border: var(--bail-border);
+  --color-bail-muted: var(--bail-muted);
+  --color-glow-orange: var(--glow-orange);
+  --color-glow-navy: var(--glow-navy);
+  --color-glow-cyan: var(--glow-cyan);
+  --color-glow-violet: var(--glow-violet);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted-foreground: var(--muted-foreground);
 }
 
 body {
@@ -70,7 +109,148 @@ body {
   animation-play-state: paused;
 }
 
-/* Smooth scrolling */
+/* Aurora & interaction keyframes */
+@keyframes aurora-drift {
+  0%, 100% { transform: translate(0%, 0%) scale(1); }
+  33%       { transform: translate(3%, -4%) scale(1.05); }
+  66%       { transform: translate(-3%, 3%) scale(0.97); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
+
+@keyframes fade-up-in {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-up-subtle {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cursor-scale {
+  from { transform: scale(1); }
+  to   { transform: scale(1.5); }
+}
+
+@keyframes spotlight {
+  0% {
+    opacity: 0;
+    transform: translate(-72%, -62%) scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -40%) scale(1);
+  }
+}
+
+.animate-spotlight {
+  animation: spotlight 2s ease 0.75s 1 forwards;
+}
+
+/* Futuristic dark-UI utility classes */
+.aurora-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: aurora-drift 12s ease-in-out infinite;
+  will-change: transform;
+}
+
+.glow-text-orange {
+  color: var(--bail-orange);
+  text-shadow: 0 0 32px rgba(237,130,28,0.4);
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
+}
+
+.noise-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+}
+
+/* Smooth scrolling — use auto to avoid double-easing with Lenis */
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
+}
+
+/* Reduced-motion accessibility guard */
+@media (prefers-reduced-motion: reduce) {
+  .aurora-blob,
+  .fade-up,
+  .marquee-track,
+  .marquee-track-reverse,
+  .animate-aurora,
+  .animate-glow,
+  .animate-fade-up,
+  .animate-count {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* === /workflow canvas tokens === */
+:root {
+  --wire-color: rgba(255,255,255,0.12);
+  --wire-active: #ed821c;
+  --status-waiting: rgba(255,255,255,0.25);
+  --status-running: #ed821c;
+  --status-done: #22c55e;
+  --node-border: rgba(255,255,255,0.08);
+  --node-border-running: rgba(237,130,28,0.6);
+  --node-border-done: rgba(34,197,94,0.4);
+  --dot-grid-color: rgba(255,255,255,0.04);
+}
+
+/* Dot-grid canvas background */
+.dot-grid {
+  background-image: radial-gradient(circle, var(--dot-grid-color) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Flowing packet animation along offset-path */
+@keyframes packet-flow {
+  0%   { offset-distance: 0%; opacity: 0.9; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+
+.packet {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--bail-orange);
+  box-shadow: 0 0 10px 3px rgba(237,130,28,0.6);
+  animation: packet-flow 2.4s ease-in-out infinite;
+  will-change: offset-distance;
+  pointer-events: none;
+}
+
+.packet-cyan {
+  background: var(--glow-cyan);
+  box-shadow: 0 0 10px 3px rgba(0,212,255,0.6);
+}
+
+/* Node status border transitions */
+.node-waiting  { border-color: var(--node-border); }
+.node-running  { border-color: var(--node-border-running); }
+.node-done     { border-color: var(--node-border-done); }
+
+@media (prefers-reduced-motion: reduce) {
+  .packet { animation: none !important; display: none; }
 }
