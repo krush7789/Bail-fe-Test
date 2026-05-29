@@ -20,6 +20,11 @@
   --glow-cyan: #00d4ff;       /* cyan accent for aurora tertiary */
   --glow-violet: #7c3aed;     /* violet accent for depth */
 
+  /* shadcn Card tokens */
+  --card: #0a0a0a;
+  --card-foreground: #fafafa;
+  --muted-foreground: #a1a1aa;
+
   /* Grain */
   --grain-opacity: 0.035;
 
@@ -46,6 +51,9 @@
   --color-glow-navy: var(--glow-navy);
   --color-glow-cyan: var(--glow-cyan);
   --color-glow-violet: var(--glow-violet);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted-foreground: var(--muted-foreground);
 }
 
 body {
@@ -126,6 +134,21 @@ body {
 @keyframes cursor-scale {
   from { transform: scale(1); }
   to   { transform: scale(1.5); }
+}
+
+@keyframes spotlight {
+  0% {
+    opacity: 0;
+    transform: translate(-72%, -62%) scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -40%) scale(1);
+  }
+}
+
+.animate-spotlight {
+  animation: spotlight 2s ease 0.75s 1 forwards;
 }
 
 /* Futuristic dark-UI utility classes */
