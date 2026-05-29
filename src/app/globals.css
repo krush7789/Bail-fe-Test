@@ -131,10 +131,6 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes cursor-scale {
-  from { transform: scale(1); }
-  to   { transform: scale(1.5); }
-}
 
 @keyframes spotlight {
   0% {

@@ -43,19 +43,30 @@ const GlowCard: React.FC<GlowCardProps> = ({
   const innerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const syncPointer = (e: PointerEvent) => {
-      const { clientX: x, clientY: y } = e;
+    let rafId: number | null = null;
+    let lastX = 0;
+    let lastY = 0;
 
-      if (cardRef.current) {
-        cardRef.current.style.setProperty('--x', x.toFixed(2));
-        cardRef.current.style.setProperty('--xp', (x / window.innerWidth).toFixed(2));
-        cardRef.current.style.setProperty('--y', y.toFixed(2));
-        cardRef.current.style.setProperty('--yp', (y / window.innerHeight).toFixed(2));
-      }
+    const syncPointer = (e: PointerEvent) => {
+      lastX = e.clientX;
+      lastY = e.clientY;
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        if (cardRef.current) {
+          cardRef.current.style.setProperty('--x', lastX.toFixed(2));
+          cardRef.current.style.setProperty('--xp', (lastX / window.innerWidth).toFixed(2));
+          cardRef.current.style.setProperty('--y', lastY.toFixed(2));
+          cardRef.current.style.setProperty('--yp', (lastY / window.innerHeight).toFixed(2));
+        }
+        rafId = null;
+      });
     };
 
-    document.addEventListener('pointermove', syncPointer);
-    return () => document.removeEventListener('pointermove', syncPointer);
+    document.addEventListener('pointermove', syncPointer, { passive: true });
+    return () => {
+      document.removeEventListener('pointermove', syncPointer);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   const { base, spread } = glowColorMap[glowColor];
@@ -90,7 +101,7 @@ const GlowCard: React.FC<GlowCardProps> = ({
       backgroundAttachment: 'fixed',
       border: 'var(--border-size) solid var(--backup-border)',
       position: 'relative' as const,
-      touchAction: 'none' as const,
+      touchAction: 'auto' as const,
     };
 
     if (width !== undefined) {

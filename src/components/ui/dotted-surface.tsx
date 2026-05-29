@@ -5,29 +5,21 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
 type DottedSurfaceProps = Omit<React.ComponentProps<'div'>, 'ref'> & {
-  /** 'fixed' fills the full viewport (original). 'absolute' fills the nearest relative ancestor. */
   mode?: 'fixed' | 'absolute';
 };
 
 export function DottedSurface({ className, mode = 'fixed', ...props }: DottedSurfaceProps) {
-  const { theme } = useTheme(); // may be undefined when no ThemeProvider is present
+  const { theme } = useTheme();
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const sceneRef = useRef<{
-    scene: THREE.Scene;
-    camera: THREE.PerspectiveCamera;
-    renderer: THREE.WebGLRenderer;
-    particles: THREE.Points[];
-    animationId: number;
-    count: number;
-  } | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const SEPARATION = 150;
-    const AMOUNTX = 40;
-    const AMOUNTY = 60;
+    // Reduced particle grid for better performance (28×35 = 980 vs original 2400)
+    const SEPARATION = 130;
+    const AMOUNTX = 28;
+    const AMOUNTY = 35;
 
     const containerEl = containerRef.current;
     const getW = () => containerEl.clientWidth || window.innerWidth;
@@ -35,23 +27,21 @@ export function DottedSurface({ className, mode = 'fixed', ...props }: DottedSur
 
     const scene = new THREE.Scene();
 
+    // Lower camera elevation so dots fill the full vertical area of the section
     const camera = new THREE.PerspectiveCamera(60, getW() / getH(), 1, 10000);
-    camera.position.set(0, 355, 1220);
+    camera.position.set(0, 150, 950);
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setPixelRatio(window.devicePixelRatio);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setSize(getW(), getH());
     renderer.setClearColor(0x000000, 0);
 
     containerEl.appendChild(renderer.domElement);
 
-    // Particle geometry
     const positions: number[] = [];
     const colors: number[] = [];
     const geometry = new THREE.BufferGeometry();
 
-    // Brand navy (#3d45a8) in 0–1 range for light / undefined theme.
-    // Light gray for dark theme so dots stay visible on dark backgrounds.
     const isDark = theme === 'dark';
 
     for (let ix = 0; ix < AMOUNTX; ix++) {
@@ -62,9 +52,10 @@ export function DottedSurface({ className, mode = 'fixed', ...props }: DottedSur
           iy * SEPARATION - (AMOUNTY * SEPARATION) / 2,
         );
         if (isDark) {
-          colors.push(0.72, 0.72, 0.72); // soft white
+          colors.push(0.72, 0.72, 0.72);
         } else {
-          colors.push(0.239, 0.271, 0.659); // --glow-navy #3d45a8
+          // Brand navy — more saturated for better visibility
+          colors.push(0.18, 0.20, 0.60);
         }
       }
     }
@@ -73,10 +64,10 @@ export function DottedSurface({ className, mode = 'fixed', ...props }: DottedSur
     geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
     const material = new THREE.PointsMaterial({
-      size: 8,
+      size: 13,
       vertexColors: true,
       transparent: true,
-      opacity: 0.45,
+      opacity: 0.75,
       sizeAttenuation: true,
     });
 
@@ -85,9 +76,11 @@ export function DottedSurface({ className, mode = 'fixed', ...props }: DottedSur
 
     let count = 0;
     let animationId = 0;
+    let isVisible = true;
 
     const animate = () => {
       animationId = requestAnimationFrame(animate);
+      if (!isVisible) return;
 
       const posAttr = geometry.attributes.position;
       const pos = posAttr.array as Float32Array;
@@ -104,12 +97,18 @@ export function DottedSurface({ className, mode = 'fixed', ...props }: DottedSur
 
       posAttr.needsUpdate = true;
       renderer.render(scene, camera);
-      count += 0.1;
+      count += 0.07; // slightly slower wave — easier on CPU
     };
 
     animate();
 
-    // Resize — use ResizeObserver for container-aware sizing
+    // Pause rendering when section is scrolled out of view
+    const io = new IntersectionObserver(
+      ([entry]) => { isVisible = entry.isIntersecting; },
+      { threshold: 0 },
+    );
+    io.observe(containerEl);
+
     const ro = new ResizeObserver(() => {
       const w = getW();
       const h = getH();
@@ -119,9 +118,8 @@ export function DottedSurface({ className, mode = 'fixed', ...props }: DottedSur
     });
     ro.observe(containerEl);
 
-    sceneRef.current = { scene, camera, renderer, particles: [points], animationId, count };
-
     return () => {
+      io.disconnect();
       ro.disconnect();
       cancelAnimationFrame(animationId);
 

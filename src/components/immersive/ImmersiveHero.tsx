@@ -10,9 +10,9 @@ import { hero } from '@/content/catalog'
 
 const SPLINE_SCENE = 'https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode'
 
-// Drop-shadow values reused on every text element
+// 3-layer shadow — dark enough to read over the robot, cheap enough to paint
 const TEXT_SHADOW =
-  '0 0 8px rgba(0,0,0,1), 0 0 24px rgba(0,0,0,1), 0 0 55px rgba(0,0,0,0.95), 0 0 110px rgba(0,0,0,0.80), 0 0 180px rgba(0,0,0,0.55)'
+  '0 0 12px rgba(0,0,0,1), 0 0 40px rgba(0,0,0,0.95), 0 0 100px rgba(0,0,0,0.70)'
 
 export default function ImmersiveHero() {
   const prefersReduced = useReducedMotion()
@@ -63,7 +63,7 @@ export default function ImmersiveHero() {
           */}
           <div
             className="
-              relative z-10
+              relative z-10 transform-gpu
               px-8 lg:px-0 py-12
               lg:absolute lg:bottom-48 lg:left-1/2 lg:-translate-x-1/2 lg:py-0
               max-w-full lg:text-center
