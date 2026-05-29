@@ -19,10 +19,7 @@ export default function ImmersiveHero() {
       aria-labelledby="immersive-hero-heading"
     >
       <Card className="w-full min-h-screen bg-black/[0.96] relative overflow-hidden rounded-none border-0">
-        <Spotlight
-          className="-top-40 left-0 md:left-60 md:-top-20"
-          fill="white"
-        />
+        <Spotlight size={600} />
 
         <div className="relative z-10 flex flex-col lg:flex-row min-h-screen pt-20">
           {/* ── Left: text content ── */}
