@@ -19,7 +19,7 @@ export function GlowButton({
   size = "md",
   className = "",
 }: GlowButtonProps) {
-  const padding = size === "lg" ? "px-8 py-3.5 text-base" : "px-6 py-2.5 text-sm";
+  const padding = size === "lg" ? "px-8 py-4 text-base" : "px-6 py-3 text-sm";
 
   const inner = (
     <span

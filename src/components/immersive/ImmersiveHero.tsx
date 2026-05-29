@@ -24,22 +24,6 @@ export default function ImmersiveHero() {
         <div className="relative z-10 flex flex-col lg:flex-row min-h-screen pt-20">
           {/* ── Left: text content ── */}
           <div className="flex-1 flex flex-col justify-center px-8 lg:px-16 py-16 lg:py-0 order-2 lg:order-1">
-            {/* Eyebrow pill */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="mb-6"
-            >
-              <span className="inline-flex items-center gap-1.5 border border-[var(--bail-orange)]/30 rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--bail-orange)] bg-[var(--bail-orange)]/10">
-                <span
-                  className="w-1.5 h-1.5 rounded-full bg-[var(--bail-orange)] inline-block"
-                  style={prefersReduced ? {} : { animation: 'glow-pulse 2s ease-in-out infinite' }}
-                />
-                {hero.eyebrow}
-              </span>
-            </motion.div>
-
             {/* Headline — gradient text matching demo style */}
             <motion.h1
               id="immersive-hero-heading"
@@ -54,14 +38,14 @@ export default function ImmersiveHero() {
               ))}
             </motion.h1>
 
-            {/* Subheadline */}
+            {/* Tagline */}
             <motion.p
               className="text-neutral-300 max-w-lg text-lg leading-relaxed mb-10"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.55, ease: 'easeOut' }}
+              transition={{ duration: 0.6, delay: 0.4, ease: 'easeOut' }}
             >
-              {hero.subheadline}
+              AI workflow automation with agents, voice AI, and support systems to boost sales, marketing, and growth.
             </motion.p>
 
             {/* CTAs */}
