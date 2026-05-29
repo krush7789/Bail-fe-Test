@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bit AI Lab — We build the AI that builds your business",
-  description: "Bit AI Lab is an AI agency specializing in AI agents, automation, chatbots, AI consulting, and custom AI products.",
+  title: "Bits AI Lab — Agents, Voice AI & Automation",
+  description: "Bits AI Lab builds intelligent automation, Voice AI agents, and AI systems that grow your business. Productized services, delivered in weeks.",
   icons: {
     icon: "/logo.gif",
     apple: "/logo.gif",
