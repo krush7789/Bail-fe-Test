@@ -23,7 +23,7 @@ export function GlowButton({
 
   const inner = (
     <span
-      className={`group relative inline-flex items-center justify-center gap-2 rounded-full bg-[#0d1224] font-semibold text-white transition-all duration-200 hover:bg-[#111829] hover:-translate-y-0.5 ${padding} ${className}`}
+      className={`group relative inline-flex items-center justify-center gap-2 rounded-full bg-[var(--bail-orange)] font-semibold text-[var(--ink)] transition-all duration-200 hover:brightness-110 ${padding} ${className}`}
     >
       {label}
       {/* Arrow — slides in on hover */}
@@ -32,7 +32,7 @@ export function GlowButton({
         height="10"
         width="10"
         fill="none"
-        className="stroke-white stroke-2 mt-px"
+        className="stroke-[var(--ink)] stroke-2 mt-px"
         aria-hidden="true"
       >
         <path

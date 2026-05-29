@@ -6,7 +6,6 @@ import { Card } from '@/components/ui/card'
 import { Spotlight } from '@/components/ui/spotlight'
 import Button from '@/components/shared/Button'
 import { GlowButton } from '@/components/ui/button-1'
-import MagneticButton from '@/components/immersive/MagneticButton'
 import { hero } from '@/content/catalog'
 
 const SPLINE_SCENE = 'https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode'
@@ -72,13 +71,11 @@ export default function ImmersiveHero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.7, ease: 'easeOut' }}
             >
-              <MagneticButton strength={0.3}>
-                <GlowButton
-                  label={hero.cta.label}
-                  href={hero.cta.href}
-                  size="lg"
-                />
-              </MagneticButton>
+              <GlowButton
+                label={hero.cta.label}
+                href={hero.cta.href}
+                size="lg"
+              />
               <Button
                 label={hero.ctaSecondary.label}
                 href={hero.ctaSecondary.href}
