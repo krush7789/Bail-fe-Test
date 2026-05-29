@@ -18,7 +18,7 @@ export default function ImmersiveHero() {
       className="relative w-full min-h-screen"
       aria-labelledby="immersive-hero-heading"
     >
-      <Card className="w-full min-h-screen bg-black/[0.96] relative overflow-hidden rounded-none border-0">
+      <Card className="w-full min-h-screen relative overflow-hidden rounded-none border-0" style={{ background: "linear-gradient(135deg, #2e337a 0%, #1e2257 60%, #0d1040 100%)" }}>
         <Spotlight size={600} />
 
         <div className="relative z-10 flex flex-col lg:flex-row min-h-screen pt-20">
