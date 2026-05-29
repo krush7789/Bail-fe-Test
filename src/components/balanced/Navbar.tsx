@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import Button from "@/components/shared/Button";
+import { GlowButton } from "@/components/ui/button-1";
 import { brand } from "@/content/catalog";
 
 const NAV_LINKS = [
@@ -62,7 +62,7 @@ export default function Navbar() {
 
         {/* Desktop CTA */}
         <div className="hidden md:block">
-          <Button label="Book a call" href="/#contact" variant="primary" size="md" />
+          <GlowButton label="Book a call" href="/#contact" size="md" />
         </div>
 
         {/* Mobile Hamburger */}
@@ -98,7 +98,7 @@ export default function Navbar() {
             </a>
           ))}
           <div className="pt-2">
-            <Button label="Book a call" href="/#contact" variant="primary" size="md" />
+            <GlowButton label="Book a call" href="/#contact" size="md" />
           </div>
         </div>
       )}

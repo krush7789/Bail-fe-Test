@@ -5,6 +5,7 @@ import { SplineScene } from '@/components/ui/splite'
 import { Card } from '@/components/ui/card'
 import { Spotlight } from '@/components/ui/spotlight'
 import Button from '@/components/shared/Button'
+import { GlowButton } from '@/components/ui/button-1'
 import MagneticButton from '@/components/immersive/MagneticButton'
 import { hero } from '@/content/catalog'
 
@@ -72,10 +73,9 @@ export default function ImmersiveHero() {
               transition={{ duration: 0.6, delay: 0.7, ease: 'easeOut' }}
             >
               <MagneticButton strength={0.3}>
-                <Button
+                <GlowButton
                   label={hero.cta.label}
                   href={hero.cta.href}
-                  variant="primary"
                   size="lg"
                 />
               </MagneticButton>

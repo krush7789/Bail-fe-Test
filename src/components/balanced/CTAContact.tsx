@@ -169,13 +169,23 @@ export default function CTAContact() {
                 </p>
               )}
 
-              <button
-                type="submit"
-                disabled={status === "sending"}
-                className="mt-1 w-full py-3.5 rounded-full bg-bail-orange text-[var(--ink)] font-semibold text-sm hover:brightness-110 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-bail-orange/20"
-              >
-                {status === "sending" ? "Sending..." : "Send message"}
-              </button>
+              <div className="relative mt-1 group">
+                {/* Glow aura — only when not disabled */}
+                {status !== "sending" && (
+                  <div
+                    className="absolute inset-0 rounded-full blur-lg opacity-50 transition-opacity duration-300 group-hover:opacity-80 pointer-events-none"
+                    style={{ background: "linear-gradient(to right, #ed821c, #7c3aed, #00d4ff)" }}
+                    aria-hidden="true"
+                  />
+                )}
+                <button
+                  type="submit"
+                  disabled={status === "sending"}
+                  className="relative w-full py-3.5 rounded-full bg-[#0d1224] text-white font-semibold text-sm border border-white/10 hover:bg-[#111829] hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 transition-all duration-200"
+                >
+                  {status === "sending" ? "Sending..." : "Send message →"}
+                </button>
+              </div>
             </form>
           )}
         </motion.div>
