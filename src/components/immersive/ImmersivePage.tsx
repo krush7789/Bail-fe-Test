@@ -12,7 +12,7 @@ import WhyUs from "@/components/balanced/WhyUs";
 import CaseStudy from "@/components/balanced/CaseStudy";
 import TechStack from "@/components/balanced/TechStack";
 import CTAContact from "@/components/balanced/CTAContact";
-import Footer from "@/components/balanced/Footer";
+import { CinematicFooter } from "@/components/ui/motion-footer";
 
 export default function ImmersivePage() {
   return (
@@ -25,11 +25,11 @@ export default function ImmersivePage() {
         <AIDemo />
         <PinnedProcess />
         <WhyUs />
-        <CaseStudy />
-        <TechStack />
+        {/* <CaseStudy /> */}
+        {/* <TechStack /> */}
         <CTAContact />
       </main>
-      <Footer />
+      {/* <CinematicFooter /> */}
     </LenisProvider>
   );
 }

@@ -23,7 +23,10 @@
   /* shadcn Card tokens */
   --card: #0a0a0a;
   --card-foreground: #fafafa;
-  --muted-foreground: #a1a1aa;
+  --muted: #f4f4f5;
+  --muted-foreground: #6b7280;
+  --border: #e4e4e7;
+  --destructive: #ef4444;
 
   /* shadcn Button tokens */
   --primary: #ed821c;
@@ -72,6 +75,9 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
 }
 
 body {

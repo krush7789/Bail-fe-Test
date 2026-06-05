@@ -7,6 +7,7 @@ interface SectionHeadingProps {
   align?: "left" | "center";
   className?: string;
   id?: string;
+  variant?: "dark" | "light";
 }
 
 export default function SectionHeading({
@@ -16,8 +17,10 @@ export default function SectionHeading({
   align = "center",
   className = "",
   id,
+  variant = "dark",
 }: SectionHeadingProps) {
   const isCenter = align === "center";
+  const isLight = variant === "light";
 
   return (
     <div className={`${isCenter ? "text-center" : "text-left"} ${className}`}>
@@ -26,14 +29,12 @@ export default function SectionHeading({
           {eyebrow}
         </p>
       )}
-      <h2 id={id} className="text-4xl md:text-5xl font-bold text-white leading-tight">
+      <h2 id={id} className={`text-4xl md:text-5xl font-bold leading-tight ${isLight ? "text-black/85" : "text-white"}`}>
         {title}
       </h2>
       {subtitle && (
         <p
-          className={`text-lg text-white/60 mt-4 max-w-2xl ${
-            isCenter ? "mx-auto" : ""
-          }`}
+          className={`text-lg mt-4 max-w-2xl ${isCenter ? "mx-auto" : ""} ${isLight ? "text-black/55" : "text-white/60"}`}
         >
           {subtitle}
         </p>
