@@ -153,7 +153,7 @@ export default function AIChatDemo() {
   return (
     <div
       ref={wrapperRef}
-      className="rounded-2xl overflow-hidden max-w-sm w-full"
+      className="rounded-2xl overflow-hidden w-full h-full flex flex-col"
       style={{ background: "var(--ink-3)" }}
     >
       {/* Header */}
@@ -173,7 +173,7 @@ export default function AIChatDemo() {
       </div>
 
       {/* Messages */}
-      <div ref={messagesContainerRef} className="px-4 py-4 flex flex-col gap-3 max-h-80 overflow-y-auto">
+      <div ref={messagesContainerRef} className="px-4 py-4 flex flex-col gap-3 flex-1 min-h-0 overflow-y-auto">
         {visibleMessages.map((msg, idx) => (
           <div
             key={idx}

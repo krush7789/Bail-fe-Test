@@ -25,6 +25,16 @@
   --card-foreground: #fafafa;
   --muted-foreground: #a1a1aa;
 
+  /* shadcn Button tokens */
+  --primary: #ed821c;
+  --primary-foreground: #ffffff;
+  --secondary: #2e337a;
+  --secondary-foreground: #ffffff;
+  --accent: rgba(255,255,255,0.08);
+  --accent-foreground: #ffffff;
+  --input: rgba(255,255,255,0.15);
+  --ring: #ed821c;
+
   /* Grain */
   --grain-opacity: 0.035;
 
@@ -54,6 +64,14 @@
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 }
 
 body {
