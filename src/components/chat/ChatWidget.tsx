@@ -7,8 +7,9 @@ import React, {
   useCallback,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageSquare, X, Send, Bot, ArrowRight } from "lucide-react";
+import { MessageSquare, X, Send, Bot, ArrowRight, Mic } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import VoicePanel from "@/components/voice/VoicePanel";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 type Role = "user" | "assistant";
@@ -152,6 +153,7 @@ function BotText({ text }: { text: string }) {
 // ── Main widget ────────────────────────────────────────────────────────────
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<"chat" | "voice">("chat");
   const [messages, setMessages] = useState<Message[]>([GREETING]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
@@ -401,8 +403,57 @@ export default function ChatWidget() {
               </button>
             </div>
 
-            {/* Messages */}
-            <div data-lenis-prevent className="flex-1 min-h-0 overflow-y-auto px-4 py-4 flex flex-col gap-3">
+            {/* ── Chat / Talk toggle ── */}
+            <div
+              className="flex-shrink-0 flex items-center justify-center px-4 py-2"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+            >
+              <div
+                className="flex rounded-lg p-[3px]"
+                style={{ background: "rgba(255,255,255,0.05)" }}
+              >
+                {(["chat", "voice"] as const).map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setMode(m)}
+                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-medium transition-all duration-150 focus:outline-none"
+                    style={{
+                      background:
+                        mode === m ? "rgba(237,130,28,0.14)" : "transparent",
+                      color:
+                        mode === m
+                          ? "var(--bail-orange)"
+                          : "rgba(255,255,255,0.38)",
+                      border:
+                        mode === m
+                          ? "1px solid rgba(237,130,28,0.25)"
+                          : "1px solid transparent",
+                    }}
+                  >
+                    {m === "chat" ? (
+                      <MessageSquare size={11} />
+                    ) : (
+                      <Mic size={11} />
+                    )}
+                    {m === "chat" ? "Chat" : "Talk"}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* ── Voice panel ── */}
+            {mode === "voice" && (
+              <div className="flex-1 min-h-0">
+                <VoicePanel />
+              </div>
+            )}
+
+            {/* ── Chat messages (hidden in voice mode but not unmounted) ── */}
+            <div
+              data-lenis-prevent
+              className="flex-1 min-h-0 overflow-y-auto px-4 py-4 flex flex-col gap-3"
+              style={{ display: mode === "voice" ? "none" : undefined }}
+            >
               {/* Quick prompts — shown before first interaction */}
               {!hasInteracted && (
                 <motion.div
@@ -508,10 +559,13 @@ export default function ChatWidget() {
               <div ref={bottomRef} />
             </div>
 
-            {/* Input area */}
+            {/* Input area — hidden in voice mode */}
             <div
               className="flex-shrink-0 px-3 pb-3 pt-2"
-              style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
+              style={{
+                borderTop: "1px solid rgba(255,255,255,0.06)",
+                display: mode === "voice" ? "none" : undefined,
+              }}
             >
               <div
                 className="flex items-end gap-2 rounded-xl p-1.5"
