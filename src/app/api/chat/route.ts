@@ -102,13 +102,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Last message must be from the user." }, { status: 400 });
     }
 
-    // Role and per-message length validation
+    // Role and per-message length validation (length cap applies to user messages only)
     const validShape = rawMessages.every(
       (m) =>
         (m.role === "user" || m.role === "assistant") &&
         typeof m.content === "string" &&
         m.content.trim().length > 0 &&
-        m.content.length <= MAX_MSG_CHARS
+        (m.role !== "user" || m.content.length <= MAX_MSG_CHARS)
     );
     if (!validShape) {
       return NextResponse.json({ error: "Invalid message format." }, { status: 400 });
