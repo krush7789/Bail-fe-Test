@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import OpenAI from "openai";
 import { buildVoiceInstructions } from "@/lib/chat-prompt";
 import {
   REALTIME_MODEL,
@@ -23,7 +22,6 @@ const voiceRateMap = new Map<string, VoiceRateEntry>();
 function checkVoiceRate(ip: string): "ok" | "hour" | "day" {
   const now = Date.now();
 
-  // Prune stale entries so memory stays bounded
   if (voiceRateMap.size > 5_000) {
     for (const [k, v] of voiceRateMap) {
       if (v.dayReset < now) voiceRateMap.delete(k);
@@ -41,7 +39,6 @@ function checkVoiceRate(ip: string): "ok" | "hour" | "day" {
     return "ok";
   }
 
-  // Reset hourly bucket if window expired
   if (e.hourReset < now) {
     e.hour = 0;
     e.hourReset = now + 3_600_000;
@@ -58,7 +55,7 @@ function checkVoiceRate(ip: string): "ok" | "hour" | "day" {
 // ── Route handler ──────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   try {
-    // 1. Same-origin check — blocks external scripts
+    // 1. Same-origin check
     const origin = req.headers.get("origin");
     if (origin) {
       const host = req.headers.get("host") ?? "";
@@ -98,31 +95,76 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 4. Mint ephemeral token.
-    //    Key is read here (inside the handler) — not at module top-level —
-    //    so the route is build-safe even if the env var is absent at build time.
+    // 4. Mint ephemeral token via direct fetch to the GA client_secrets endpoint.
+    //    We bypass the OpenAI SDK here because the SDK v6.42 still calls the
+    //    old /realtime/sessions path which returns 404 since the May 2026 GA release.
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       console.error("[realtime-session] OPENAI_API_KEY not set");
       return NextResponse.json({ error: "Service unavailable." }, { status: 503 });
     }
 
-    const openai = new OpenAI({ apiKey });
     const instructions = await buildVoiceInstructions();
 
-    const session = await openai.beta.realtime.sessions.create({
-      model: REALTIME_MODEL,
-      voice: REALTIME_VOICE,
-      instructions,
-      modalities: ["audio", "text"],
-      turn_detection: { type: "server_vad" },
-      max_response_output_tokens: 400, // keep voice replies short
-      temperature: 0.8,               // recommended for audio models
-    });
+    const openaiRes = await fetch(
+      "https://api.openai.com/v1/realtime/client_secrets",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          session: {
+            type: "realtime",
+            model: REALTIME_MODEL,
+            instructions,
+            audio: {
+              output: { voice: REALTIME_VOICE },
+              input: {
+                // far_field optimises the server-side noise reduction for a
+                // speakerphone / loudspeaker setup (mic at a distance from the
+                // speaker). If the client_secrets endpoint rejects this with
+                // "Unknown parameter", remove noise_reduction and keep the rest.
+                noise_reduction: { type: "far_field" },
+                turn_detection: {
+                  // semantic_vad uses the model to detect speech intent rather than
+                  // raw volume — far more robust against fan/AC noise and room echo
+                  // fragments than server_vad with a volume threshold.
+                  type: "semantic_vad",
+                  eagerness: "high", // respond quickly once the user finishes speaking
+                  // interrupt_response: false because the mic is gated off while the
+                  // assistant speaks — barge-in is not possible and not needed.
+                  interrupt_response: false,
+                },
+              },
+            },
+          },
+        }),
+      }
+    );
+
+    if (!openaiRes.ok) {
+      const errBody = await openaiRes.text();
+      console.error(
+        `[realtime-session] OpenAI ${openaiRes.status}:`,
+        errBody
+      );
+      return NextResponse.json(
+        { error: "Could not create voice session. Please try again." },
+        { status: 502 }
+      );
+    }
+
+    // New GA response: ephemeral token is at data.value (not data.client_secret.value)
+    const data = (await openaiRes.json()) as {
+      value: string;
+      expires_at: number;
+    };
 
     return NextResponse.json({
-      client_secret: session.client_secret.value,
-      expires_at: session.client_secret.expires_at,
+      client_secret: data.value,
+      expires_at: data.expires_at,
       model: REALTIME_MODEL,
       voice: REALTIME_VOICE,
     });

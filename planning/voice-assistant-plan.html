@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Voice Assistant Plan — LiveKit Cloud + Gemini Live</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="hero">
+    <div class="status-badge">✓ Approved Direction</div>
+    <h1>Voice Assistant Plan<br/><span>LiveKit Cloud + Gemini Live</span></h1>
+    <p class="sub">BAIL AI Agency · June 2026 · Prepared for implementation</p>
+  </div>
+
+  <!-- Quick nav -->
+  <nav class="nav">
+    <a href="#why">Why this change</a>
+    <a href="#arch">Architecture</a>
+    <a href="#flow">Call flow</a>
+    <a href="#keys">Keys needed</a>
+    <a href="#build">Build steps</a>
+    <a href="#envvars">Env vars</a>
+    <a href="#cost">Cost</a>
+    <a href="#verify">Verification</a>
+    <a href="#defaults">Defaults</a>
+    <a href="#sources">Sources</a>
+  </nav>
+
+  <!-- 1. Why -->
+  <div id="why" class="section">
+    <h2>📌 1. Why we're rebuilding the voice layer</h2>
+    <p>The text chatbot is live and working. The voice option (Chat / Talk toggle) was built using <strong>raw browser WebRTC</strong> — <code>getUserMedia</code> + <code>RTCPeerConnection</code> directly to OpenAI Realtime. It failed consistently on a loudspeaker in a noisy room: the mic picks up the assistant's own voice playing through the speaker, the voice-activity detector thinks the user spoke, and the model answers itself with filler ("yes, got it, sure").</p>
+    <p>Three rounds of fixes (echo flags, semantic VAD, manual mic-gating) did not solve it. The root cause is infrastructure, not the model.</p>
+
+    <div class="callout success">
+      <div class="label">The fix</div>
+      <p><strong>Production voice assistants</strong> (including OpenAI's own ChatGPT voice, which runs on LiveKit) use a <strong>media server + server-side Krisp acoustic echo cancellation</strong> with a <strong>persistent agent worker</strong>. We had none of that. The plan rebuilds the voice layer to match the production pattern.</p>
+    </div>
+
+    <ul style="padding-left:1.25rem; color:var(--text); font-size:0.93rem;">
+      <li><strong>LiveKit Cloud</strong> — media server (SFU) + <strong>Krisp BVC</strong> (server-side echo cancellation). Krisp is what finally kills the echo. Included free on their Build tier.</li>
+      <li><strong>Gemini Live</strong> — speech-to-speech model. ~200ms latency, strong in noise, far cheaper than OpenAI. Free tier for Gemini API.</li>
+      <li><strong>No server you run.</strong> Push one file with the LiveKit CLI; they host and autoscale the agent worker.</li>
+      <li><strong>Text chat is untouched.</strong> Existing KB + guardrails are reused, not rewritten.</li>
+    </ul>
+  </div>
+
+  <!-- 2. Architecture -->
+  <div id="arch" class="section">
+    <h2>🏗 2. Architecture diagram</h2>
+<pre>
+                  YOUR BROWSER (the website visitor)
+          ┌─────────────────────────────────────────────────┐
+          │   ChatWidget  ──►  VoicePanel  (Talk tab)         │
+          │         │                                         │
+          │         │  useRealtimeVoice.ts                    │
+          │         │  (livekit-client SDK + native AEC)      │
+          └─────────┼───────────────────────────────────────-┘
+                    │
+    (1) POST /api/realtime-session  ──────────────────► ┌─────────────────────────┐
+        "give me a token to join"                        │  NEXT.JS on VERCEL       │
+                    ◄────────────────────────────────── │  /api/realtime-session   │
+    (2) { token, url, roomName }                         │  • same-origin check     │
+                    │                                    │  • per-IP rate limit     │
+                    │                                    │  • mints LiveKit JWT     │
+                    │                                    └─────────────────────────┘
+                    │  (3) room.connect(url, token)
+                    ▼
+     ┌───────────────────────────────────────────────────────────────┐
+     │          LIVEKIT CLOUD  (ap-south / Mumbai)                    │
+     │                                                               │
+     │  WebRTC room  ◄────────── live mic audio ───────  browser     │
+     │       │                                                       │
+     │       │  (4) dispatches a job to the agent worker             │
+     │       ▼                                                       │
+     │  ┌──────────────────────────────────────────────────────┐    │
+     │  │  AGENT WORKER  (your agent.ts, hosted by LiveKit)      │    │
+     │  │                                                        │    │
+     │  │  • Krisp BVC  ← the echo cancellation fix             │    │
+     │  │  • buildVoiceInstructions()  ← your KB + guardrails   │    │
+     │  │  • Gemini Live RealtimeModel  ◄──► GOOGLE API         │    │
+     │  │  • greeting on session start                          │    │
+     │  │  • authoritative 3-minute hard cap                    │    │
+     │  └──────────────────────────────────────────────────────┘    │
+     │       │                                                       │
+     │       └──── assistant voice audio ──────────────►  browser   │
+     │                                                               │
+     └───────────────────────────────────────────────────────────────┘
+
+KEY: No server of yours anywhere.
+     Vercel  runs the tiny token route (/api/realtime-session).
+     LiveKit runs the media server AND the agent worker.
+     Google  runs Gemini.
+     You only write code + push it.
+</pre>
+
+    <h3>Who owns what</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Layer</th><th>Who hosts it</th><th>What you do</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Token route <code>/api/realtime-session</code></td>
+            <td>Vercel (your existing host)</td>
+            <td>Stays on Next.js, just rewritten to mint a LiveKit JWT instead of an OpenAI token</td>
+          </tr>
+          <tr>
+            <td>Media server (WebRTC SFU + Krisp)</td>
+            <td><strong>LiveKit Cloud</strong></td>
+            <td>Nothing — it's managed; you create a project and paste the URL</td>
+          </tr>
+          <tr>
+            <td>Agent worker (Gemini session + guardrails)</td>
+            <td><strong>LiveKit Cloud</strong></td>
+            <td>Write one <code>agent.ts</code> file (~100 lines); deploy with <code>lk agent deploy</code></td>
+          </tr>
+          <tr>
+            <td>Gemini Live model</td>
+            <td><strong>Google</strong></td>
+            <td>Create an API key in Google AI Studio</td>
+          </tr>
+          <tr>
+            <td>Browser SDK</td>
+            <td>Your repo</td>
+            <td>Replace <code>RTCPeerConnection</code> in <code>useRealtimeVoice.ts</code> with <code>livekit-client</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 3. Call flow -->
+  <div id="flow" class="section">
+    <h2>🔄 3. Call flow (step by step)</h2>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-arrow">①</div>
+        <div class="flow-text">Visitor clicks <strong>"Talk"</strong> in the widget <span class="tag browser">browser</span></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-arrow">②</div>
+        <div class="flow-text">Browser POSTs to <code>/api/realtime-session</code> — same-origin + rate-limit checked <span class="tag vercel">vercel</span></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-arrow">③</div>
+        <div class="flow-text">Vercel mints a short-lived <strong>LiveKit JWT</strong> and returns <code>{ token, url, roomName }</code> — no provider key in the response <span class="tag vercel">vercel</span></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-arrow">④</div>
+        <div class="flow-text">Browser calls <code>room.connect(url, token)</code> and enables the mic — native AEC on <span class="tag browser">browser</span></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-arrow">⑤</div>
+        <div class="flow-text">LiveKit room is created; agent job is dispatched to the worker <span class="tag livekit">livekit cloud</span></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-arrow">⑥</div>
+        <div class="flow-text">Agent opens <strong>Krisp BVC</strong> (noise + echo cancellation), loads guardrails from <code>buildVoiceInstructions()</code>, starts Gemini Live session <span class="tag livekit">agent worker</span> <span class="tag google">gemini</span></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-arrow">⑦</div>
+        <div class="flow-text">Agent speaks the greeting: <em>"Hi! I'm the AI assistant for Bits AI Lab — how can I help you today?"</em> <span class="tag browser">browser hears it</span></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-arrow">⑧</div>
+        <div class="flow-text">Visitor speaks → Krisp strips echo/noise → Gemini generates spoken answer → browser plays it back → natural back-and-forth <span class="tag livekit">echo-free ✓</span></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-arrow">⑨</div>
+        <div class="flow-text">After <strong>3 minutes</strong> the agent closes the session; browser shows "call ended" — next call blocked for 1 hour (rate limit) <span class="tag vercel">rate limit</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Keys needed -->
+  <div id="keys" class="section">
+    <h2>⚡ 4. What I need from you (5 values + 1 action)</h2>
+
+    <div class="callout action">
+      <div class="label">Do this before saying "run"</div>
+      <p>Gather the 5 values below (takes ~10 min), and run <code>lk cloud auth</code> once in your terminal so the CLI is linked to your account. Then paste the values and say <strong>"run this document and implement everything."</strong> Everything else is automated.</p>
+    </div>
+
+    <div class="kv-grid">
+      <div class="kv-card">
+        <div class="knum">Value 1</div>
+        <div class="kname">LIVEKIT_API_KEY</div>
+        <div class="kdesc">LiveKit Cloud → create a project, region <strong>ap-south (Mumbai)</strong> → Settings → Keys</div>
+      </div>
+      <div class="kv-card">
+        <div class="knum">Value 2</div>
+        <div class="kname">LIVEKIT_API_SECRET</div>
+        <div class="kdesc">Same place as above — shown once, copy immediately. Used with the API key to sign JWTs.</div>
+      </div>
+      <div class="kv-card">
+        <div class="knum">Value 3</div>
+        <div class="kname">NEXT_PUBLIC_LIVEKIT_URL</div>
+        <div class="kdesc">LiveKit project WebSocket URL — looks like <code>wss://your-project-xxxx.livekit.cloud</code></div>
+      </div>
+      <div class="kv-card">
+        <div class="knum">Value 4</div>
+        <div class="kname">GOOGLE_API_KEY</div>
+        <div class="kdesc"><a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a> → Create API key. Enable the Gemini Live API (may need billing). Goes in the agent worker only — never in the browser.</div>
+      </div>
+      <div class="kv-card">
+        <div class="knum">Value 5 (action)</div>
+        <div class="kname">LiveKit CLI auth</div>
+        <div class="kdesc">Run in your terminal: <code>brew install livekit-cli</code> then <code>lk cloud auth</code> and approve in browser. One-time, links the CLI to your account so the deploy works.</div>
+      </div>
+      <div class="kv-card">
+        <div class="knum">Also needed</div>
+        <div class="kname">Rotate OpenAI key</div>
+        <div class="kdesc" style="color: #f87171;">The OpenAI key was exposed in chat. Go to platform.openai.com → API keys → delete the old one, create a new one, and update it in Vercel. Text chat still uses it.</div>
+      </div>
+    </div>
+
+    <h3>Account setup (one-time, ~10 min)</h3>
+    <ol style="padding-left:1.25rem; color:var(--text); font-size:0.93rem; line-height:1.9;">
+      <li>Go to <a href="https://livekit.io" target="_blank">livekit.io</a> → sign up / log in → <strong>Create project</strong> → pick region <strong>ap-south (Mumbai)</strong>. Free Build tier, no card needed to start. Copy Values 1, 2, 3.</li>
+      <li>Go to <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a> → Create API key. If prompted, enable the <strong>Gemini Live API</strong> and set up billing (Google may require it for Live API). Copy Value 4.</li>
+      <li>In your terminal: <code>brew install livekit-cli</code> (or the official installer if not on Mac). Then <code>lk cloud auth</code> and approve in browser. This is Value 5 / Action.</li>
+    </ol>
+  </div>
+
+  <!-- 5. Build steps -->
+  <div id="build" class="section">
+    <h2>🔨 5. The build — file by file</h2>
+
+    <div class="file-tree">
+      <span class="dir">bail-fe/</span><br/>
+      ├── <span class="dir">voice-agent/</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="new">← NEW (agent worker, deployed to LiveKit Cloud)</span><br/>
+      │ &nbsp;&nbsp;├── <span class="file">package.json</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="new">new</span><br/>
+      │ &nbsp;&nbsp;├── <span class="file">agent.ts</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="new">new — the live Gemini voice agent</span><br/>
+      │ &nbsp;&nbsp;├── <span class="file">tsconfig.json</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="new">new</span><br/>
+      │ &nbsp;&nbsp;└── <span class="file">livekit.toml</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="new">new — region ap-south</span><br/>
+      ├── <span class="dir">src/app/api/realtime-session/</span><br/>
+      │ &nbsp;&nbsp;└── <span class="file">route.ts</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="rewrite">REWRITE — LiveKit JWT instead of OpenAI token</span><br/>
+      ├── <span class="dir">src/components/voice/</span><br/>
+      │ &nbsp;&nbsp;├── <span class="file">useRealtimeVoice.ts</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="rewrite">REWRITE — livekit-client, delete all mic-gating</span><br/>
+      │ &nbsp;&nbsp;└── <span class="file">VoicePanel.tsx</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="keep">minimal/no change (hook shape preserved)</span><br/>
+      ├── <span class="dir">src/lib/</span><br/>
+      │ &nbsp;&nbsp;├── <span class="file">voice-config.ts</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="edit">EDIT — Gemini constants replace OpenAI ones</span><br/>
+      │ &nbsp;&nbsp;├── <span class="file">knowledge-base.ts</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="edit">tiny EDIT — module-relative path so worker finds KB</span><br/>
+      │ &nbsp;&nbsp;├── <span class="file">chat-prompt.ts</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="keep">reused unchanged (guardrails shared with agent)</span><br/>
+      │ &nbsp;&nbsp;└── <span class="file">*.ts</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="keep">all other lib files untouched</span><br/>
+      └── <span class="dir">src/app/api/chat/</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="keep">text chat — untouched</span>
+    </div>
+
+    <ul class="steps" style="margin-top:1.25rem;">
+      <li>
+        <div class="step-num">A</div>
+        <div class="step-body">
+          <strong>New <code>voice-agent/agent.ts</code></strong> — the agent worker.
+          Uses <code>buildVoiceInstructions()</code> from existing <code>src/lib/chat-prompt.ts</code> (single source of guardrails + KB, no duplication). Sets up Gemini Live with <code>BackgroundVoiceCancellation()</code> (Krisp). Sends the greeting on start. Starts a 3-min timer → closes session.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">B</div>
+        <div class="step-body">
+          <strong>Rewrite <code>src/app/api/realtime-session/route.ts</code></strong> — mints a <strong>LiveKit JWT</strong> (<code>AccessToken</code> from <code>livekit-server-sdk</code>) instead of an OpenAI ephemeral token. Returns <code>{ token, url, roomName }</code>.
+          Keeps existing same-origin check (403), Content-Type check (415), and per-IP rate limiter unchanged.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">C</div>
+        <div class="step-body">
+          <strong>Rewrite <code>src/components/voice/useRealtimeVoice.ts</code></strong> — replaces the raw <code>RTCPeerConnection</code> / SDP / data-channel / manual mic-gating with <code>livekit-client</code>. <em>Keeps the exact same hook return shape</em> so <code>VoicePanel.tsx</code> needs ~no change.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">D</div>
+        <div class="step-body">
+          <strong>Edit <code>src/lib/voice-config.ts</code></strong> — replace OpenAI constants with <code>GEMINI_REALTIME_MODEL = "gemini-2.5-flash-native-audio-preview"</code> and <code>GEMINI_VOICE = "Aoede"</code>. Keep <code>MAX_CALL_SECONDS</code>, <code>CALLS_PER_HOUR</code>, <code>CALLS_PER_DAY</code>.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">E</div>
+        <div class="step-body">
+          <strong>Edit <code>src/lib/knowledge-base.ts</code></strong> — resolve the KB file path relative to the module (not <code>process.cwd()</code>) so both Next.js and the agent worker can find <code>doc/bits-ai-lab-knowledge-base.md</code> without any duplication.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">F</div>
+        <div class="step-body">
+          <strong>Env + deploy</strong> — add env vars to Vercel; deploy <code>voice-agent/</code> to LiveKit Cloud ap-south with <code>lk agent deploy</code>; set agent secrets <code>GOOGLE_API_KEY</code>, <code>LIVEKIT_*</code>.
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- 6. Env vars -->
+  <div id="envvars" class="section">
+    <h2>🔑 6. Environment variables (final state)</h2>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Variable</th><th>Where</th><th>Public?</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>LIVEKIT_API_KEY</code></td>
+            <td>Vercel + agent worker</td>
+            <td><span class="no">No</span></td>
+            <td>Sign / verify LiveKit JWTs</td>
+          </tr>
+          <tr>
+            <td><code>LIVEKIT_API_SECRET</code></td>
+            <td>Vercel + agent worker</td>
+            <td><span class="no">No</span></td>
+            <td>Sign / verify LiveKit JWTs</td>
+          </tr>
+          <tr>
+            <td><code>NEXT_PUBLIC_LIVEKIT_URL</code></td>
+            <td>Vercel</td>
+            <td><span class="yes">Yes</span> (wss URL only)</td>
+            <td>Browser uses this to connect to the room</td>
+          </tr>
+          <tr>
+            <td><code>GOOGLE_API_KEY</code></td>
+            <td>Agent worker only</td>
+            <td><span class="no">No — never browser</span></td>
+            <td>Gemini Live auth (agent only)</td>
+          </tr>
+          <tr>
+            <td><code>OPENAI_API_KEY</code></td>
+            <td>Vercel</td>
+            <td><span class="no">No</span></td>
+            <td>Text chat only (unchanged) — rotate this key first!</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout warn">
+      <div class="label">Security rule</div>
+      <p><code>GOOGLE_API_KEY</code> lives <strong>only</strong> in the agent worker environment on LiveKit Cloud — it never touches the browser or Vercel. The browser only ever receives a short-lived LiveKit JWT from <code>/api/realtime-session</code>.</p>
+    </div>
+  </div>
+
+  <!-- 7. Cost -->
+  <div id="cost" class="section">
+    <h2>💰 7. Cost analysis</h2>
+    <p>Gemini Live cost is identical whether you use LiveKit Cloud or self-host — it's Google's API billed by token: <strong>~$0.005/min input + $0.018/min output ≈ ~₹5 per 3-min call</strong>. Only the transport/hosting layer differs.</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Factor</th><th>LiveKit Cloud (Build, free) ✅</th><th>Self-host on Railway ❌</th></tr>
+        </thead>
+        <tbody>
+          <tr class="chosen">
+            <td>Fixed monthly cost</td>
+            <td class="yes">₹0</td>
+            <td>~₹4,000–5,000/mo (2 always-on services)</td>
+          </tr>
+          <tr class="chosen">
+            <td>Per-call transport</td>
+            <td class="yes">Free up to ~330 calls/mo, then ~₹4/call</td>
+            <td>Folded into fixed cost</td>
+          </tr>
+          <tr class="chosen">
+            <td>Krisp echo cancellation</td>
+            <td class="yes">✅ included</td>
+            <td class="no">❌ Not available off-cloud (the dealbreaker)</td>
+          </tr>
+          <tr class="chosen">
+            <td>Audio transport</td>
+            <td class="yes">UDP / WebRTC (full quality)</td>
+            <td>TCP-only on Railway (degraded)</td>
+          </tr>
+          <tr class="chosen">
+            <td>Ops burden</td>
+            <td class="yes">Managed — nothing to patch</td>
+            <td>You patch/scale/monitor 2 servers</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout warn">
+      <div class="label">Why self-hosting was rejected</div>
+      <p>Krisp BVC for agent pipelines is <strong>LiveKit Cloud only</strong> — confirmed in their docs: "Enhanced noise cancellation is available when you use LiveKit Cloud for realtime transport." The open-source fallback (DTLN) is plain noise <em>suppression</em>, not acoustic echo cancellation — it would not fix loudspeaker echo, which is the exact failing scenario. Railway also runs WebRTC over TCP (no UDP), which degrades call quality. Self-hosting only wins on cost above ~500 concurrent sessions, which is far beyond an agency website.</p>
+    </div>
+
+    <h3>Monthly estimates</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Traffic (3-min cap)</th><th>LiveKit tier</th><th>Transport cost</th><th>+ Gemini cost</th><th>Total/mo</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>~200 calls (~600 min)</td>
+            <td>Build (free)</td>
+            <td class="yes">₹0</td>
+            <td>~₹1,000</td>
+            <td class="yes">~₹1,000/mo</td>
+          </tr>
+          <tr>
+            <td>~330 calls (~990 min)</td>
+            <td>Build (free, ceiling)</td>
+            <td class="yes">₹0</td>
+            <td>~₹1,650</td>
+            <td class="yes">~₹1,650/mo</td>
+          </tr>
+          <tr>
+            <td>~1,000 calls (~3,000 min)</td>
+            <td>Ship ($50/mo)</td>
+            <td>~₹4,200</td>
+            <td>~₹5,000</td>
+            <td>~₹9,200/mo</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 8. Verification -->
+  <div id="verify" class="section">
+    <h2>✅ 8. Verification checklist (tested over HTTPS, on speakers)</h2>
+    <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1rem;">This is the failing setup from before. If all 6 pass, it's done.</p>
+    <ul class="checks">
+      <li><div class="check-icon">🔊</div><div>Open widget → Talk → grant mic → <strong>hear the greeting within ~1s.</strong></div></li>
+      <li><div class="check-icon">💬</div><div>Ask "What does Bits AI Lab do?" → concise, KB-grounded answer, <strong>no echo, no self-answering</strong> even on a loudspeaker in a noisy room.</div></li>
+      <li><div class="check-icon">🌀</div><div>Run a fan or AC → Krisp BVC suppresses it; <strong>no spurious turns</strong> from background noise.</div></li>
+      <li><div class="check-icon">🛡</div><div>Ask about price / phone number / founder name → <strong>deflects to the contact form</strong>, same as text chat.</div></li>
+      <li><div class="check-icon">⏱</div><div>3-min cap ends the call automatically. Make a 3rd call within an hour from one IP → <strong>blocked at the token route (HTTP 429)</strong>.</div></li>
+      <li><div class="check-icon">🔒</div><div>Inspect the browser's network tab → <strong>no provider key in any response</strong>; only the LiveKit JWT from <code>/api/realtime-session</code>. <code>OPENAI_API_KEY</code> only used by text chat.</div></li>
+    </ul>
+  </div>
+
+  <!-- 9. Defaults -->
+  <div id="defaults" class="section">
+    <h2>⚙️ 9. Open questions (defaults already chosen — change if you want)</h2>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>#</th><th>Question</th><th>Default</th><th>Alternatives</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Gemini voice</td>
+            <td><code>Aoede</code> (warm female)</td>
+            <td><code>Kore</code>, <code>Puck</code>, <code>Charon</code></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>LiveKit region</td>
+            <td><code>ap-south (Mumbai)</code> — lowest latency for India</td>
+            <td>Any other LiveKit region</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Call limits</td>
+            <td>3-min cap · 2 calls/hour · 8 calls/day per IP</td>
+            <td>Change any number</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Agent worker location</td>
+            <td><code>voice-agent/</code> inside this repo (shares KB)</td>
+            <td>Separate repo</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 10. Sources -->
+  <div id="sources" class="section">
+    <h2>📚 10. Sources</h2>
+    <ul style="padding-left:1.25rem; font-size:0.9rem; line-height:2;">
+      <li><a href="https://livekit.com/blog/openai-livekit-partnership-advanced-voice-realtime-api" target="_blank">OpenAI + LiveKit — ChatGPT Advanced Voice runs on LiveKit</a></li>
+      <li><a href="https://docs.livekit.io/transport/media/noise-cancellation/" target="_blank">Noise &amp; echo cancellation (Krisp) — LiveKit docs (Cloud-only for agents)</a></li>
+      <li><a href="https://livekit.com/pricing" target="_blank">LiveKit pricing — Build / Ship / Scale tiers</a></li>
+      <li><a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank">Gemini Live API pricing — Google</a></li>
+      <li><a href="https://www.forasoft.com/blog/article/livekit-vs-agora-cost-analysis" target="_blank">LiveKit vs self-host cost analysis — Forasoft</a></li>
+      <li><a href="https://www.npmjs.com/package/@vapi-ai/web" target="_blank">Vapi web SDK — the alternative we compared against (no n8n required)</a></li>
+    </ul>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align:center; padding: 2rem 0; color: var(--muted); font-size: 0.82rem;">
+    BAIL AI Agency · Voice Assistant Plan · June 2026<br/>
+    <strong style="color: var(--accent);">When ready:</strong> gather the 5 values above and say <em>"run this document and implement everything."</em>
+  </div>
+
+</div>
+</body>
+</html>

@@ -11,8 +11,8 @@
 // CALLS_PER_HOUR / CALLS_PER_DAY: per-IP limits enforced server-side
 //   (ephemeral token minting is the gate — no token = no call).
 
-export const REALTIME_MODEL =
-  "gpt-4o-mini-realtime-preview" as const;
+// New GA model names (May 2026): "gpt-realtime-mini" (cheap) or "gpt-realtime-2" (flagship)
+export const REALTIME_MODEL = "gpt-realtime-mini" as const;
 
 export const REALTIME_VOICE = "coral" as const;
 
