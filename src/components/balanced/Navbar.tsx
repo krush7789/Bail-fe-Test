@@ -53,17 +53,17 @@ export default function Navbar() {
                   className="flex items-center gap-2.5 group"
                   aria-label={`${brand.name} — home`}
                 >
-                  <span className="flex items-center justify-center bg-white/10 border border-white/10 rounded-xl p-1.5 shrink-0 backdrop-blur-sm">
+                  <span className="flex items-center justify-center bg-white/10 border border-white/15 rounded-2xl p-2 shrink-0 backdrop-blur-md shadow-md">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src="/logo.gif"
                       alt={`${brand.name} logo`}
-                      width={28}
-                      height={28}
-                      className="block"
+                      width={38}
+                      height={38}
+                      className="block w-9 h-9 md:w-10 md:h-10 object-contain"
                     />
                   </span>
-                  <span className="text-white font-semibold text-base group-hover:text-bail-orange transition-colors duration-200 hidden sm:inline">
+                  <span className="text-white font-bold text-lg md:text-xl tracking-tight group-hover:text-[var(--bail-orange)] transition-colors duration-200 hidden sm:inline">
                     {brand.name}
                   </span>
                 </Link>
@@ -161,9 +161,9 @@ export default function Navbar() {
                 <img
                   src="/logo.gif"
                   alt={`${brand.name} logo`}
-                  width={24}
-                  height={24}
-                  className="block rounded-lg"
+                  width={30}
+                  height={30}
+                  className="block w-7 h-7 rounded-xl object-contain"
                 />
               </Link>
 

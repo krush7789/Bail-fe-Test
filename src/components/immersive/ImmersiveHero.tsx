@@ -20,16 +20,15 @@ interface OrbitIcon {
   size: string
 }
 
-// 8 AI Platform Logos positioned in OPEN VISUAL SPACES (zero overlap with headline text or robot head)
+// 7 AI Platform Logos positioned in OPEN VISUAL SPACES (zero overlap with headline text or robot head)
 const ORBIT_ICONS: OrbitIcon[] = [
   { id: 1, src: '/logos/chatgpt.png',        label: 'ChatGPT',        x: '-47%', y: '-12%', delay: 0,    size: 'w-12 h-12 md:w-15 md:h-15' },
   { id: 2, src: '/logos/gemini.png',         label: 'Gemini',         x: '46%',  y: '-42%', delay: 0.1,  size: 'w-12 h-12 md:w-14 md:h-14' },
   { id: 3, src: '/logos/claude.png',         label: 'Claude',         x: '47%',  y: '-8%',  delay: 0.2,  size: 'w-12 h-12 md:w-15 md:h-15' },
-  { id: 4, src: '/logos/ollama.png',         label: 'Ollama',         x: '-46%', y: '-42%', delay: 0.25, size: 'w-11 h-11 md:w-14 md:h-14' },
-  { id: 5, src: '/logos/deepseek.png',       label: 'DeepSeek',       x: '0%',   y: '-38%', delay: 0.3,  size: 'w-10 h-10 md:w-13 md:h-13' },
-  { id: 6, src: '/logos/meta.png',           label: 'Meta',           x: '38%',  y: '22%',  delay: 0.35, size: 'w-11 h-11 md:w-14 md:h-14' },
-  { id: 7, src: '/logos/cursor.png',         label: 'Cursor',         x: '-38%', y: '22%',  delay: 0.4,  size: 'w-11 h-11 md:w-14 md:h-14' },
-  { id: 8, src: '/logos/github-copilot.png', label: 'GitHub Copilot', x: '0%',   y: '34%',  delay: 0.45, size: 'w-11 h-11 md:w-14 md:h-14' },
+  { id: 4, src: '/logos/deepseek.png',       label: 'DeepSeek',       x: '0%',   y: '-38%', delay: 0.25, size: 'w-10 h-10 md:w-13 md:h-13' },
+  { id: 5, src: '/logos/meta.png',           label: 'Meta',           x: '38%',  y: '22%',  delay: 0.3,  size: 'w-11 h-11 md:w-14 md:h-14' },
+  { id: 6, src: '/logos/cursor.png',         label: 'Cursor',         x: '-38%', y: '22%',  delay: 0.35, size: 'w-11 h-11 md:w-14 md:h-14' },
+  { id: 7, src: '/logos/github-copilot.png', label: 'GitHub Copilot', x: '0%',   y: '34%',  delay: 0.4,  size: 'w-11 h-11 md:w-14 md:h-14' },
 ]
 
 function FloatingIcon({ iconData, mouseX, mouseY }: {
