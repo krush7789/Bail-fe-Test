@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+import { motion, useInView, useScroll, useMotionValueEvent } from "framer-motion";
 import { GlowCard } from "@/components/ui/spotlight-card";
 import { DottedSurface } from "@/components/ui/dotted-surface";
+import CircuitCity from "@/components/immersive/CircuitCity";
 import { pillars, onRequest } from "@/content/catalog";
 import {
   MessageSquare,
@@ -122,7 +123,7 @@ function ServiceCard({
   );
 }
 
-export default function ImmersiveServices() {
+function ServicesCardGrid() {
   const sectionRef = useRef<HTMLElement>(null);
   const headingInView = useInView(sectionRef, { once: true, margin: "-80px" });
 
@@ -133,6 +134,14 @@ export default function ImmersiveServices() {
       className="relative overflow-hidden py-28 px-6 bg-[#f5f6f9]"
       aria-labelledby="services-heading"
     >
+      {/* Dark-to-light gradient transition from hero/stats */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-0 left-0 right-0 h-[120px] z-0"
+        style={{
+          background: 'linear-gradient(180deg, var(--ink-2) 0%, transparent 100%)',
+        }}
+      />
       {/* Animated dot-wave background — brand navy, section-scoped */}
       <DottedSurface mode="absolute" className="opacity-30" />
 
@@ -242,4 +251,50 @@ export default function ImmersiveServices() {
       </div>
     </section>
   );
+}
+
+// ─── Circuit City — scroll-driven flythrough (desktop, motion allowed) ───────
+function CircuitCitySection() {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef(0);
+
+  const { scrollYProgress } = useScroll({
+    target: wrapperRef,
+    offset: ["start start", "end end"],
+  });
+
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    progressRef.current = v;
+  });
+
+  return (
+    <section
+      id="services"
+      ref={wrapperRef}
+      aria-labelledby="services-heading"
+      className="relative h-[320vh] bg-ink"
+    >
+      <div className="sticky top-0 h-screen w-full overflow-hidden">
+        <CircuitCity progressRef={progressRef} />
+
+        <div className="pointer-events-none absolute top-0 inset-x-0 pt-20 px-6 text-center z-10">
+          <span className="inline-block text-xs font-bold uppercase tracking-[0.2em] text-bail-orange mb-4">
+            What We Build
+          </span>
+          <h2
+            id="services-heading"
+            className="text-4xl md:text-5xl font-bold text-white leading-tight"
+          >
+            Nine AI services.{" "}
+            <span className="text-white/40 font-normal">All production-grade.</span>
+          </h2>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Export — always renders the cards layout as shown in screenshot ─────────
+export default function ImmersiveServices() {
+  return <ServicesCardGrid />;
 }

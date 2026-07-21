@@ -190,6 +190,17 @@ export default function CTAContact() {
           )}
         </motion.div>
       </div>
+
+      {/* Minimal Footer Strip */}
+      <div className="relative z-10 max-w-5xl mx-auto mt-24 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/40">
+        <p>© 2026 Bits AI Lab. All rights reserved.</p>
+        <div className="flex items-center gap-6">
+          <a href="#services" className="hover:text-white transition-colors">Services</a>
+          <a href="#process" className="hover:text-white transition-colors">Process</a>
+          <a href="#whyus" className="hover:text-white transition-colors">About</a>
+          <a href="#contact" className="hover:text-white transition-colors">Contact</a>
+        </div>
+      </div>
     </section>
   );
 }
