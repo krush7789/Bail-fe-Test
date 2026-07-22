@@ -117,8 +117,8 @@ export default function ImmersiveHero() {
   const heroSubOpacity = useTransform(smoothProgress, [0, 0.4], [0, 1], { clamp: true })
   const heroSubY = useTransform(smoothProgress, [0, 0.4], [50, 0], { clamp: true })
 
-  // Headline sits in the dead center of the screen initially (140px lower), and smoothly animates upward to 0px as text/buttons enter from below
-  const headlineY = useTransform(smoothProgress, [0, 0.4], [140, 0], { clamp: true })
+  // Headline sits lower on screen initially (220px lower), and smoothly animates upward to 0px as text/buttons enter from below
+  const headlineY = useTransform(smoothProgress, [0, 0.4], [220, 0], { clamp: true })
 
   // GSAP ScrollTrigger Video Control with Smooth RAF Lerping
   React.useEffect(() => {
