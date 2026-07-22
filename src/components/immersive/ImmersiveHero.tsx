@@ -113,6 +113,13 @@ export default function ImmersiveHero() {
   const statsY = useTransform(smoothProgress, [0, 0.6], [80, 0], { clamp: true })
   const statsScale = useTransform(smoothProgress, [0, 0.6], [0.94, 1], { clamp: true })
 
+  // Subheadline & CTA buttons animate in as webm scrolls from 0s to 2s (0.0 to 0.4 scroll progress), reach 100% opacity at 2s, and stay 100% visible
+  const heroSubOpacity = useTransform(smoothProgress, [0, 0.4], [0, 1], { clamp: true })
+  const heroSubY = useTransform(smoothProgress, [0, 0.4], [50, 0], { clamp: true })
+
+  // Headline sits in the dead center of the screen initially (140px lower), and smoothly animates upward to 0px as text/buttons enter from below
+  const headlineY = useTransform(smoothProgress, [0, 0.4], [140, 0], { clamp: true })
+
   // GSAP ScrollTrigger Video Control with Smooth RAF Lerping
   React.useEffect(() => {
     const container = containerRef.current
@@ -199,10 +206,13 @@ export default function ImmersiveHero() {
 
 
         {/* ─── Hero Content Layout ─── */}
-        <div className="relative z-30 w-full max-w-7xl mx-auto px-6 pt-20 pb-4 flex flex-col h-full justify-between pointer-events-none">
+        <div className="relative z-30 w-full max-w-7xl mx-auto px-6 pt-20 pb-16 flex flex-col h-full justify-center gap-8 lg:gap-12 pointer-events-none">
 
-          {/* Top: Split Headline — Left and Right of Robot Head */}
-          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 items-start pt-8">
+          {/* Top: Split Headline — Centered alone initially, animates upward as subheadline arrives */}
+          <motion.div
+            style={{ y: headlineY }}
+            className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 items-center"
+          >
             {/* Left side: AI-Powered Services */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -230,32 +240,25 @@ export default function ImmersiveHero() {
                 </span>
               </h1>
             </motion.div>
-          </div>
+          </motion.div>
 
-          {/* Middle Left: Subtitle Vertical List & Glassmorphic Buttons */}
-          <div className="w-full max-w-xl text-left flex flex-col gap-6 pointer-events-auto">
-            {/* Subheadline - Vertical Stacked List */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.35, ease: 'easeOut' }}
-              className="flex flex-col gap-2.5 font-medium drop-shadow"
-            >
+          {/* Middle Centered: Subtitle Vertical List & Glassmorphic Buttons (Animates in during 2s scroll & stays visible) */}
+          <motion.div
+            style={{ opacity: heroSubOpacity, y: heroSubY }}
+            className="w-full max-w-xl mx-auto text-center flex flex-col items-center gap-6 pointer-events-auto"
+          >
+            {/* Subheadline - Vertical Stacked Centered List */}
+            <div className="flex flex-col items-center gap-2.5 font-medium drop-shadow">
               {['Intelligent automation', 'Sales growth', 'Workflow efficiency'].map((item, i) => (
                 <div key={i} className="flex items-center gap-3 text-base sm:text-lg text-white/90 font-medium">
                   <span className="w-2 h-2 rounded-full bg-[var(--bail-orange)] shadow-[0_0_10px_rgba(237,130,28,0.8)] shrink-0" />
                   <span>{item}</span>
                 </div>
               ))}
-            </motion.div>
+            </div>
 
-            {/* Glassmorphic Button Row - Shifted Lower Down */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.45, ease: 'easeOut' }}
-              className="flex flex-wrap items-center gap-3 mt-2"
-            >
+            {/* Glassmorphic Button Row - Centered */}
+            <div className="flex flex-wrap items-center justify-center gap-3 mt-1">
               {/* Book a call — Orange Pill with White Circular Arrow Badge */}
               <a
                 href={hero.cta.href}
@@ -276,8 +279,8 @@ export default function ImmersiveHero() {
               >
                 See what we build
               </a>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
 
           {/* Bottom: Spread Full-Width Transparent Glassmorphic 6-Stat Bar */}
           <motion.div

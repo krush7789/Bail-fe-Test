@@ -1,25 +1,35 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
+import { useScroll, useMotionValueEvent } from "framer-motion";
 import { process } from "@/content/catalog";
 
 export default function PinnedProcess() {
   const [activeStep, setActiveStep] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Automatic sequential animation loop: Discover (0) -> Build (1) -> Deploy (2) -> repeat
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveStep((prev) => (prev + 1) % process.length);
-    }, 2500);
+  // Scrollable animated: maps scroll position to active step (faster response with less scrolling required)
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start 80%", "end 60%"],
+  });
 
-    return () => clearInterval(timer);
-  }, []);
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    if (latest < 0.35) {
+      setActiveStep(0);
+    } else if (latest < 0.65) {
+      setActiveStep(1);
+    } else {
+      setActiveStep(2);
+    }
+  });
 
   return (
     <section
+      ref={containerRef}
       id="process"
       aria-labelledby="process-heading"
-      className="bg-[var(--ink-2)] py-32 px-6 overflow-hidden relative text-white"
+      className="bg-[var(--ink-2)] py-20 px-6 overflow-hidden relative text-white"
     >
       {/* Background Aurora Blobs */}
       <div
@@ -35,7 +45,7 @@ export default function PinnedProcess() {
 
       <div className="max-w-3xl mx-auto relative z-10">
         {/* Section Header */}
-        <div className="mb-16">
+        <div className="mb-12">
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--bail-orange)] mb-3 block">
             Our Process
           </span>
@@ -54,15 +64,19 @@ export default function PinnedProcess() {
             const isLast = i === process.length - 1;
 
             return (
-              <div key={step.number} className="flex gap-8 group">
+              <div
+                key={step.number}
+                onClick={() => setActiveStep(i)}
+                className="flex gap-8 group cursor-pointer"
+              >
                 {/* Left column: node + connector */}
                 <div className="flex flex-col items-center flex-shrink-0 w-14">
                   {/* Outer Ring + Center Dot */}
                   <div
-                    className={`w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-full transition-all duration-700 relative ${
+                    className={`w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-full transition-all duration-500 relative ${
                       isActive
                         ? "border-2 border-[var(--bail-orange)] bg-[var(--bail-orange)]/15 shadow-[0_0_30px_rgba(237,130,28,0.8)] scale-110"
-                        : "border border-white/20 bg-white/5 shadow-none scale-100"
+                        : "border border-white/40 bg-white/10 shadow-none scale-100"
                     }`}
                   >
                     {/* Pulsing Aura Ring when Active */}
@@ -72,10 +86,10 @@ export default function PinnedProcess() {
 
                     {/* Center Brand Orange Dot */}
                     <div
-                      className={`w-3.5 h-3.5 rounded-full transition-all duration-700 ${
+                      className={`w-3.5 h-3.5 rounded-full transition-all duration-500 ${
                         isActive
                           ? "bg-[var(--bail-orange)] shadow-[0_0_15px_#ed821c] scale-125"
-                          : "bg-white/30 scale-100"
+                          : "bg-white/60 scale-100"
                       }`}
                     />
                   </div>
@@ -83,32 +97,32 @@ export default function PinnedProcess() {
                   {/* Vertical Line Connector */}
                   {!isLast && (
                     <div
-                      className={`w-0.5 flex-1 min-h-[4rem] my-1 transition-all duration-700 ${
-                        isActive ? "bg-[var(--bail-orange)]/70" : "bg-white/15"
+                      className={`w-0.5 flex-1 min-h-[3rem] my-1 transition-all duration-500 ${
+                        isActive ? "bg-[var(--bail-orange)]/70" : "bg-white/30"
                       }`}
                     />
                   )}
                 </div>
 
-                {/* Right column: Content */}
+                {/* Right column: Content (Softer / Less Faded Text - 1 to 2 shades lighter) */}
                 <div
-                  className={`pt-1 transition-all duration-700 ${
-                    !isLast ? "pb-14" : ""
-                  } ${isActive ? "opacity-100 translate-y-0" : "opacity-35 translate-y-1"}`}
+                  className={`pt-1 transition-all duration-500 ${
+                    !isLast ? "pb-10" : ""
+                  } ${isActive ? "opacity-100 translate-y-0" : "opacity-80 translate-y-0"}`}
                 >
                   <p className="text-xs font-mono font-bold text-[var(--bail-orange)] mb-1 tracking-widest">
                     {step.number}
                   </p>
                   <h3
-                    className={`text-3xl md:text-4xl font-bold mb-3 tracking-tight transition-colors duration-700 ${
-                      isActive ? "text-white" : "text-white/40"
+                    className={`text-3xl md:text-4xl font-bold mb-3 tracking-tight transition-colors duration-500 ${
+                      isActive ? "text-white" : "text-slate-200"
                     }`}
                   >
                     {step.title}
                   </h3>
                   <p
-                    className={`text-base sm:text-lg max-w-lg leading-relaxed transition-colors duration-700 ${
-                      isActive ? "text-white/80" : "text-white/30"
+                    className={`text-base sm:text-lg max-w-lg leading-relaxed transition-colors duration-500 ${
+                      isActive ? "text-white/95 font-medium" : "text-slate-300"
                     }`}
                   >
                     {step.description}
@@ -120,7 +134,7 @@ export default function PinnedProcess() {
         </div>
 
         {/* Bottom Tagline Quote */}
-        <p className="mt-20 text-center text-white/50 italic text-lg">
+        <p className="mt-20 text-center text-white/70 italic text-lg">
           &ldquo;You own everything — code, models, infrastructure — from day one.&rdquo;
         </p>
       </div>
