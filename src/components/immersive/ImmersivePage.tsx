@@ -17,7 +17,7 @@ export default function ImmersivePage() {
       <main>
         <ImmersiveHero />
         <ImmersiveServices />
-        <AIDemo />
+        {/* <AIDemo /> */}
         <PinnedProcess />
         <WhyUs />
         <CTAContact />

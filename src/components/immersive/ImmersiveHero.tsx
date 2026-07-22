@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { motion, useMotionValue, useSpring } from 'framer-motion'
+import { motion, useMotionValue, useSpring, useScroll, useTransform } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { hero, stats } from '@/content/catalog'
@@ -20,16 +20,7 @@ interface OrbitIcon {
   size: string
 }
 
-// 7 AI Platform Logos positioned in OPEN VISUAL SPACES (zero overlap with headline text or robot head)
-const ORBIT_ICONS: OrbitIcon[] = [
-  { id: 1, src: '/logos/chatgpt.png',        label: 'ChatGPT',        x: '-47%', y: '-12%', delay: 0,    size: 'w-12 h-12 md:w-15 md:h-15' },
-  { id: 2, src: '/logos/gemini.png',         label: 'Gemini',         x: '46%',  y: '-42%', delay: 0.1,  size: 'w-12 h-12 md:w-14 md:h-14' },
-  { id: 3, src: '/logos/claude.png',         label: 'Claude',         x: '47%',  y: '-8%',  delay: 0.2,  size: 'w-12 h-12 md:w-15 md:h-15' },
-  { id: 4, src: '/logos/deepseek.png',       label: 'DeepSeek',       x: '0%',   y: '-38%', delay: 0.25, size: 'w-10 h-10 md:w-13 md:h-13' },
-  { id: 5, src: '/logos/meta.png',           label: 'Meta',           x: '38%',  y: '22%',  delay: 0.3,  size: 'w-11 h-11 md:w-14 md:h-14' },
-  { id: 6, src: '/logos/cursor.png',         label: 'Cursor',         x: '-38%', y: '22%',  delay: 0.35, size: 'w-11 h-11 md:w-14 md:h-14' },
-  { id: 7, src: '/logos/github-copilot.png', label: 'GitHub Copilot', x: '0%',   y: '34%',  delay: 0.4,  size: 'w-11 h-11 md:w-14 md:h-14' },
-]
+
 
 function FloatingIcon({ iconData, mouseX, mouseY }: {
   iconData: OrbitIcon
@@ -90,7 +81,7 @@ function FloatingIcon({ iconData, mouseX, mouseY }: {
           rotate: [0, 3, 0, -3, 0],
         }}
         transition={{
-          duration: 5 + Math.random() * 4,
+          duration: 5 + (iconData.id * 0.6),
           repeat: Infinity,
           repeatType: 'mirror',
           ease: 'easeInOut',
@@ -114,13 +105,35 @@ export default function ImmersiveHero() {
   const mouseX = React.useRef(0)
   const mouseY = React.useRef(0)
 
-  // GSAP ScrollTrigger Video Control
+  const rawProgress = useMotionValue(0)
+  const smoothProgress = useSpring(rawProgress, { stiffness: 90, damping: 22, mass: 0.4 })
+
+  // Stats band animates in as webm scrolls from 0s to 3s (0.0 to 0.6 scroll progress), reaches 100% opacity at 3s, and stays 100% visible when completely scrolled
+  const statsOpacity = useTransform(smoothProgress, [0, 0.6], [0, 1], { clamp: true })
+  const statsY = useTransform(smoothProgress, [0, 0.6], [80, 0], { clamp: true })
+  const statsScale = useTransform(smoothProgress, [0, 0.6], [0.94, 1], { clamp: true })
+
+  // GSAP ScrollTrigger Video Control with Smooth RAF Lerping
   React.useEffect(() => {
     const container = containerRef.current
     const video = videoRef.current
     if (!container || !video) return
 
     let st: ScrollTrigger | null = null
+    let targetTime = 0
+    let rafId: number
+
+    const renderLoop = () => {
+      if (video && !isNaN(video.duration) && video.duration > 0) {
+        const delta = targetTime - video.currentTime
+        if (Math.abs(delta) > 0.0005) {
+          video.currentTime += delta * 0.18
+        }
+      }
+      rafId = requestAnimationFrame(renderLoop)
+    }
+
+    rafId = requestAnimationFrame(renderLoop)
 
     const initScrollTrigger = () => {
       if (st) st.kill()
@@ -131,19 +144,11 @@ export default function ImmersiveHero() {
         trigger: container,
         start: 'top top',
         end: 'bottom bottom',
-        scrub: 0.5,
+        scrub: 0.8,
         onUpdate: (self) => {
-          if (video && !isNaN(duration) && duration > 0) {
-            const targetTime = self.progress * duration
-            const delta = targetTime - video.currentTime
-            if (Math.abs(delta) > 0.005) {
-              const nextTime = video.currentTime + delta * 0.3
-              if ('fastSeek' in video && typeof (video as any).fastSeek === 'function') {
-                ; (video as any).fastSeek(nextTime)
-              } else {
-                video.currentTime = nextTime
-              }
-            }
+          rawProgress.set(self.progress)
+          if (!isNaN(duration) && duration > 0) {
+            targetTime = self.progress * duration
           }
         },
       })
@@ -156,10 +161,11 @@ export default function ImmersiveHero() {
     }
 
     return () => {
+      cancelAnimationFrame(rafId)
       video.removeEventListener('loadedmetadata', initScrollTrigger)
       if (st) st.kill()
     }
-  }, [])
+  }, [rawProgress])
 
   const handleMouseMove = (e: React.MouseEvent) => {
     mouseX.current = e.clientX
@@ -191,21 +197,10 @@ export default function ImmersiveHero() {
           <div className="absolute inset-0 bg-radial from-transparent via-black/20 to-black/80 pointer-events-none" />
         </div>
 
-        {/* Orbiting AI Logos: Positioned in open visual spaces around text and robot */}
-        <div className="absolute inset-0 max-w-7xl mx-auto pointer-events-none z-10">
-          {ORBIT_ICONS.map((iconData) => (
-            <FloatingIcon
-              key={iconData.id}
-              iconData={iconData}
-              mouseX={mouseX}
-              mouseY={mouseY}
-            />
-          ))}
-        </div>
 
         {/* ─── Hero Content Layout ─── */}
         <div className="relative z-30 w-full max-w-7xl mx-auto px-6 pt-20 pb-4 flex flex-col h-full justify-between pointer-events-none">
-          
+
           {/* Top: Split Headline — Left and Right of Robot Head */}
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 items-start pt-8">
             {/* Left side: AI-Powered Services */}
@@ -237,24 +232,29 @@ export default function ImmersiveHero() {
             </motion.div>
           </div>
 
-          {/* Middle Left: Subtitle & Glassmorphic Buttons */}
-          <div className="w-full max-w-xl text-left flex flex-col gap-4 pointer-events-auto">
-            {/* Subheadline */}
-            <motion.p
+          {/* Middle Left: Subtitle Vertical List & Glassmorphic Buttons */}
+          <div className="w-full max-w-xl text-left flex flex-col gap-6 pointer-events-auto">
+            {/* Subheadline - Vertical Stacked List */}
+            <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.35, ease: 'easeOut' }}
-              className="text-base sm:text-lg text-white/80 leading-relaxed font-medium drop-shadow"
+              className="flex flex-col gap-2.5 font-medium drop-shadow"
             >
-              {hero.subheadline}
-            </motion.p>
+              {['Intelligent automation', 'Sales growth', 'Workflow efficiency'].map((item, i) => (
+                <div key={i} className="flex items-center gap-3 text-base sm:text-lg text-white/90 font-medium">
+                  <span className="w-2 h-2 rounded-full bg-[var(--bail-orange)] shadow-[0_0_10px_rgba(237,130,28,0.8)] shrink-0" />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </motion.div>
 
-            {/* Glassmorphic Button Row */}
+            {/* Glassmorphic Button Row - Shifted Lower Down */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.45, ease: 'easeOut' }}
-              className="flex flex-wrap items-center gap-3"
+              className="flex flex-wrap items-center gap-3 mt-2"
             >
               {/* Book a call — Orange Pill with White Circular Arrow Badge */}
               <a
@@ -281,9 +281,11 @@ export default function ImmersiveHero() {
 
           {/* Bottom: Spread Full-Width Transparent Glassmorphic 6-Stat Bar */}
           <motion.div
-            initial={{ opacity: 0, y: 25 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.55, ease: 'easeOut' }}
+            style={{
+              opacity: statsOpacity,
+              y: statsY,
+              scale: statsScale,
+            }}
             className="w-full pointer-events-auto mb-2 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-xl shadow-2xl overflow-hidden grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-y sm:divide-y-0 sm:divide-x divide-white/15"
           >
             {stats.map((stat, i) => (

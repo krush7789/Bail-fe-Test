@@ -21,6 +21,7 @@ import {
   BarChart2,
   BookOpen,
   ArrowRight,
+  TrendingUp,
   type LucideIcon,
 } from "lucide-react";
 
@@ -274,7 +275,18 @@ function LibraryBookSpineCard({
 // ─── 3. Main Services Section Component ──────────────────────────────────────
 
 export default function ImmersiveServices() {
+  const [activeTab, setActiveTab] = useState<"automate" | "grow">("automate");
   const [activeServiceId, setActiveServiceId] = useState<number>(1);
+
+  const activePillar = pillars.find((p) => p.id === activeTab) || pillars[0];
+
+  const handleTabChange = (tabId: "automate" | "grow") => {
+    setActiveTab(tabId);
+    const targetPillar = pillars.find((p) => p.id === tabId);
+    if (targetPillar && !targetPillar.services.some((s) => s.id === activeServiceId)) {
+      setActiveServiceId(targetPillar.services[0].id);
+    }
+  };
 
   return (
     <section
@@ -282,20 +294,18 @@ export default function ImmersiveServices() {
       className="relative overflow-hidden py-24 px-6 bg-[#f5f6f9]"
       aria-labelledby="services-heading"
     >
-      {/* Seamless light-mode top background */}
-
-      {/* Subtle bottom-only pixel/data surface pattern (max 5% opacity) */}
+      {/* Subtle bottom-only pixel/data surface pattern */}
       <div className="absolute inset-x-0 bottom-0 h-[30%] pointer-events-none z-0">
         <DottedSurface mode="absolute" className="opacity-5" />
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto">
-        {/* 1. Section Eyebrow (Verbatim) */}
+        {/* 1. Section Eyebrow */}
         <span className="inline-block text-xs font-bold uppercase tracking-[0.2em] text-[var(--bail-orange)] mb-3">
           WHAT WE BUILD
         </span>
 
-        {/* 2. Heading (Verbatim) */}
+        {/* 2. Heading */}
         <h2
           id="services-heading"
           className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-4"
@@ -305,7 +315,7 @@ export default function ImmersiveServices() {
           <span className="text-gray-400 font-normal">All production-grade.</span>
         </h2>
 
-        {/* 3. Supporting Paragraph (Verbatim) */}
+        {/* 3. Supporting Paragraph */}
         <p className="text-base text-gray-500 max-w-xl leading-relaxed mb-10">
           Two pillars. Zero fluff. Every engagement built and run by our
           team — you own all of it.
@@ -314,62 +324,81 @@ export default function ImmersiveServices() {
         {/* 4. Active Open-Book Terminal / Live System Preview */}
         <OpenBookSystemPreview activeId={activeServiceId} />
 
-        {/* 5 & 6. AI System Library Shelves (AUTOMATE & GROW) */}
-        {pillars.map((pillar, pi) => {
-          const meta = PILLAR_META[pillar.id as keyof typeof PILLAR_META];
-          if (!meta) return null;
+        {/* 5. Category Tabs Bar (AUTOMATION & GROWTH) */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 border-b border-gray-200/80 pb-4">
+          <div className="inline-flex p-1.5 rounded-2xl bg-white border border-gray-200/90 shadow-sm gap-2">
+            <button
+              type="button"
+              onClick={() => handleTabChange("automate")}
+              className={`px-5 py-2.5 rounded-xl text-xs md:text-sm font-bold transition-all duration-200 flex items-center gap-2.5 ${
+                activeTab === "automate"
+                  ? "bg-[var(--bail-orange)] text-white shadow-md shadow-orange-500/20"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/60"
+              }`}
+            >
+              <Zap className="w-4 h-4" />
+              <span>AUTOMATION</span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-black/10">5</span>
+            </button>
 
-          return (
-            <div key={pillar.id} className={pi > 0 ? "mt-16" : ""}>
-              {/* Category Shelf Header */}
-              <div className="flex items-center gap-3 mb-6">
-                <span
-                  className="block w-6 h-px flex-shrink-0"
-                  style={{ background: meta.dividerColor }}
-                  aria-hidden="true"
+            <button
+              type="button"
+              onClick={() => handleTabChange("grow")}
+              className={`px-5 py-2.5 rounded-xl text-xs md:text-sm font-bold transition-all duration-200 flex items-center gap-2.5 ${
+                activeTab === "grow"
+                  ? "bg-[var(--bail-navy)] text-white shadow-md shadow-indigo-900/20"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/60"
+              }`}
+            >
+              <TrendingUp className="w-4 h-4" />
+              <span>GROWTH</span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/10">4</span>
+            </button>
+          </div>
+
+          <span className="text-gray-400 text-xs md:text-sm font-medium">
+            {activePillar.label} — {activePillar.tagline}
+          </span>
+        </div>
+
+        {/* 6. Active Category Digital Bookshelf Rack */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.25 }}
+            className="p-4 md:p-6 rounded-3xl bg-slate-900/5 border border-gray-200/80 backdrop-blur-sm relative"
+          >
+            {/* Horizontal Shelf Line */}
+            <div className="absolute bottom-0 inset-x-4 h-2 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-full shadow-inner pointer-events-none" />
+
+            {/* 3D Books Grid Layout */}
+            <div
+              className={`
+                grid grid-cols-1 sm:grid-cols-2 ${
+                  activeTab === "automate"
+                    ? "lg:grid-cols-5"
+                    : "lg:grid-cols-4"
+                } gap-4 relative z-10
+              `}
+            >
+              {activePillar.services.map((service, index) => (
+                <LibraryBookSpineCard
+                  key={service.id}
+                  service={service}
+                  index={index}
+                  pillarId={activePillar.id}
+                  isActive={activeServiceId === service.id}
+                  onSelect={() => setActiveServiceId(service.id)}
                 />
-                <span
-                  className={`text-xs font-bold uppercase tracking-[0.18em] ${meta.labelColor}`}
-                >
-                  {pillar.label} LIBRARY
-                </span>
-                <span className="hidden sm:block text-gray-400 text-sm">
-                  — {pillar.tagline}
-                </span>
-              </div>
-
-              {/* 3D Digital Bookshelf Shelf Rack */}
-              <div className="p-4 md:p-6 rounded-3xl bg-slate-900/5 border border-gray-200/80 backdrop-blur-sm relative">
-                {/* Horizontal Shelf Line */}
-                <div className="absolute bottom-0 inset-x-4 h-2 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-full shadow-inner pointer-events-none" />
-
-                {/* 3D Books Grid Layout */}
-                <div
-                  className={`
-                    grid grid-cols-1 sm:grid-cols-2 ${
-                      pillar.id === "automate"
-                        ? "lg:grid-cols-5"
-                        : "lg:grid-cols-4"
-                    } gap-4 relative z-10
-                  `}
-                >
-                  {pillar.services.map((service, index) => (
-                    <LibraryBookSpineCard
-                      key={service.id}
-                      service={service}
-                      index={index}
-                      pillarId={pillar.id}
-                      isActive={activeServiceId === service.id}
-                      onSelect={() => setActiveServiceId(service.id)}
-                    />
-                  ))}
-                </div>
-              </div>
+              ))}
             </div>
-          );
-        })}
+          </motion.div>
+        </AnimatePresence>
 
-        {/* 7. Existing Footer / Category Tags (Verbatim) */}
+        {/* 7. Footer / Category Tags */}
         <div className="mt-20 pt-8 border-t border-gray-200/80 text-center">
           <p className="text-xs text-gray-400 uppercase tracking-widest mb-4 font-medium font-mono">
             ALSO AVAILABLE ON REQUEST

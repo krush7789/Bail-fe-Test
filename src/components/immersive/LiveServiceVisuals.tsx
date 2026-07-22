@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   MessageSquare,
   Mic,
@@ -22,13 +22,9 @@ import {
   Clock,
   ArrowRight,
   UserCheck,
+  User,
 } from "lucide-react";
 
-// Helper for reduced-motion checks
-const prefersReducedMotion =
-  typeof window !== "undefined"
-    ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    : false;
 
 // ─── 01. AI Chatbots & Assistants Visual ─────────────────────────────────────
 export function ChatbotVisual() {
@@ -87,6 +83,7 @@ export function ChatbotVisual() {
 
 // ─── 02. Voice AI Agents Visual ─────────────────────────────────────────────
 export function VoiceVisual() {
+  const prefersReducedMotion = useReducedMotion();
   return (
     <div className="w-full h-full flex flex-col justify-between p-4 bg-white/95 rounded-2xl border border-gray-200/90 shadow-sm font-sans text-xs">
       {/* Call Header */}
@@ -105,25 +102,83 @@ export function VoiceVisual() {
         </span>
       </div>
 
-      {/* Waveform visualizer */}
-      <div className="my-3 p-3 bg-slate-900 rounded-xl flex items-center justify-between gap-1 h-14">
-        {[40, 75, 30, 90, 50, 80, 45, 95, 60, 35, 85, 50, 70, 40].map((h, i) => (
-          <motion.span
-            key={i}
-            className="w-1 rounded-full bg-gradient-to-t from-[var(--bail-orange)] to-amber-300"
-            animate={
-              prefersReducedMotion
-                ? { height: `${h}%` }
-                : { height: [`${h * 0.3}%`, `${h}%`, `${h * 0.4}%`] }
-            }
-            transition={{
-              duration: 1.2,
-              repeat: Infinity,
-              repeatType: "mirror",
-              delay: i * 0.08,
-            }}
-          />
-        ))}
+      {/* Human Caller <-> Central Telephone Waveform <-> AI Robot Agent */}
+      <div className="my-3 flex items-center gap-2.5">
+        {/* Left: Human Avatar */}
+        <div className="flex flex-col items-center gap-1 shrink-0">
+          <div className="w-10 h-10 rounded-full border-2 border-blue-400/80 shadow-md relative overflow-hidden bg-slate-900">
+            <img
+              src="/images/human-avatar.png"
+              alt="Human Caller"
+              className="w-full h-full object-cover"
+            />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white absolute bottom-0 right-0 z-10" />
+          </div>
+          <span className="text-[9.5px] font-bold text-gray-700 font-mono">Human</span>
+        </div>
+
+        {/* Center: Waveform Bar with Central Telephone Circle Icon */}
+        <div className="flex-1 p-2.5 bg-slate-900 rounded-2xl flex items-center justify-between gap-1.5 h-16 shadow-inner relative overflow-hidden border border-slate-800">
+          {/* Left Waveform Bars */}
+          <div className="flex items-center gap-1 flex-1 justify-around h-full">
+            {[40, 75, 30, 90, 60].map((h, i) => (
+              <motion.span
+                key={`l-${i}`}
+                className="w-1 rounded-full bg-gradient-to-t from-[var(--bail-orange)] to-amber-300"
+                animate={
+                  prefersReducedMotion
+                    ? { height: `${h}%` }
+                    : { height: [`${h * 0.3}%`, `${h}%`, `${h * 0.4}%`] }
+                }
+                transition={{
+                  duration: 1.2,
+                  repeat: Infinity,
+                  repeatType: "mirror",
+                  delay: i * 0.08,
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Central Telephone Circle Badge */}
+          <div className="w-9 h-9 rounded-full bg-[var(--bail-orange)] text-white shadow-lg shadow-orange-500/40 flex items-center justify-center shrink-0 border-2 border-white/20 z-10 relative">
+            <PhoneCall className="w-4 h-4 animate-pulse" />
+          </div>
+
+          {/* Right Waveform Bars */}
+          <div className="flex items-center gap-1 flex-1 justify-around h-full">
+            {[60, 90, 35, 85, 50].map((h, i) => (
+              <motion.span
+                key={`r-${i}`}
+                className="w-1 rounded-full bg-gradient-to-t from-amber-300 to-[var(--bail-orange)]"
+                animate={
+                  prefersReducedMotion
+                    ? { height: `${h}%` }
+                    : { height: [`${h * 0.3}%`, `${h}%`, `${h * 0.4}%`] }
+                }
+                transition={{
+                  duration: 1.2,
+                  repeat: Infinity,
+                  repeatType: "mirror",
+                  delay: i * 0.08 + 0.2,
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Right: AI Robot Avatar */}
+        <div className="flex flex-col items-center gap-1 shrink-0">
+          <div className="w-10 h-10 rounded-full border-2 border-amber-400/80 shadow-md relative overflow-hidden bg-slate-900">
+            <img
+              src="/images/robot-avatar.png"
+              alt="AI Robot"
+              className="w-full h-full object-cover"
+            />
+            <span className="w-2.5 h-2.5 rounded-full bg-[var(--bail-orange)] border-2 border-white absolute bottom-0 right-0 animate-ping z-10" />
+          </div>
+          <span className="text-[9.5px] font-bold text-gray-700 font-mono">AI Robot</span>
+        </div>
       </div>
 
       {/* Action result */}
