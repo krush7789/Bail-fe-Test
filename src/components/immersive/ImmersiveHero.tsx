@@ -194,7 +194,6 @@ export default function ImmersiveHero() {
             muted
             playsInline
             preload="auto"
-            poster="/hero-robot.jpg"
             className="w-full h-full object-cover object-center"
           >
             <source src="/hero-robot.webm" type="video/webm" />
