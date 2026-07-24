@@ -102,8 +102,16 @@ function FloatingIcon({ iconData, mouseX, mouseY }: {
 export default function ImmersiveHero() {
   const containerRef = React.useRef<HTMLDivElement>(null)
   const videoRef = React.useRef<HTMLVideoElement>(null)
+  const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const mouseX = React.useRef(0)
   const mouseY = React.useRef(0)
+
+  // Touch/iOS can't scroll-scrub a <video>, so those devices scrub an image sequence on a canvas.
+  // Starts false (SSR + desktop default) and flips on the client for touch devices.
+  const [isTouch, setIsTouch] = React.useState(false)
+  React.useEffect(() => {
+    setIsTouch(window.matchMedia('(hover: none) and (pointer: coarse)').matches)
+  }, [])
 
   const rawProgress = useMotionValue(0)
   const smoothProgress = useSpring(rawProgress, { stiffness: 90, damping: 22, mass: 0.4 })
@@ -121,15 +129,82 @@ export default function ImmersiveHero() {
   const statsY = useTransform(smoothProgress, [0.35, 0.95], [80, 0], { clamp: true })
   const statsScale = useTransform(smoothProgress, [0.35, 0.95], [0.94, 1], { clamp: true })
 
-  // GSAP ScrollTrigger Video Control with Smooth RAF Lerping
+  // Scroll-scrub the hero. Desktop scrubs the all-intra <video> via currentTime.
+  // Touch/iOS can't repaint a paused <video> on seek, so it scrubs a preloaded image
+  // sequence on a <canvas> instead — same frame-changes-with-scroll experience.
   React.useEffect(() => {
     const container = containerRef.current
-    const video = videoRef.current
-    if (!container || !video) return
+    if (!container) return
 
     let st: ScrollTrigger | null = null
+
+    // ── Touch: image-sequence scrub on canvas ──
+    if (isTouch) {
+      const canvas = canvasRef.current
+      const ctx = canvas?.getContext('2d')
+      if (!canvas || !ctx) return
+
+      const FRAME_COUNT = 60
+      const images: HTMLImageElement[] = []
+      let progress = 0
+
+      const draw = (p: number) => {
+        progress = p
+        const idx = Math.min(FRAME_COUNT - 1, Math.max(0, Math.round(p * (FRAME_COUNT - 1))))
+        const img = images[idx]
+        if (!img || !img.complete || !img.naturalWidth) return
+        const cw = canvas.width
+        const ch = canvas.height
+        const ir = img.naturalWidth / img.naturalHeight
+        // object-cover: fill the canvas, crop the overflow
+        let dw = cw, dh = cw / ir, dx = 0, dy = (ch - dh) / 2
+        if (cw / ch <= ir) {
+          dh = ch; dw = ch * ir; dx = (cw - dw) / 2; dy = 0
+        }
+        ctx.clearRect(0, 0, cw, ch)
+        ctx.drawImage(img, dx, dy, dw, dh)
+      }
+
+      const resize = () => {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2)
+        canvas.width = canvas.clientWidth * dpr
+        canvas.height = canvas.clientHeight * dpr
+        draw(progress)
+      }
+
+      for (let i = 0; i < FRAME_COUNT; i++) {
+        const img = new Image()
+        img.src = `/hero-frames/frame-${String(i + 1).padStart(3, '0')}.jpg`
+        if (i === 0) img.onload = () => draw(progress)
+        images.push(img)
+      }
+
+      resize()
+      window.addEventListener('resize', resize)
+
+      st = ScrollTrigger.create({
+        trigger: container,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 0.8,
+        onUpdate: (self) => {
+          rawProgress.set(self.progress)
+          draw(self.progress)
+        },
+      })
+
+      return () => {
+        window.removeEventListener('resize', resize)
+        if (st) st.kill()
+      }
+    }
+
+    // ── Desktop: scrub the <video> frame-by-frame (video stays paused) ──
+    const video = videoRef.current
+    if (!video) return
+
     let targetTime = 0
-    let rafId: number
+    let rafId = 0
 
     const renderLoop = () => {
       if (video && !isNaN(video.duration) && video.duration > 0) {
@@ -140,14 +215,11 @@ export default function ImmersiveHero() {
       }
       rafId = requestAnimationFrame(renderLoop)
     }
-
     rafId = requestAnimationFrame(renderLoop)
 
     const initScrollTrigger = () => {
       if (st) st.kill()
-
       const duration = video.duration || 5
-
       st = ScrollTrigger.create({
         trigger: container,
         start: 'top top',
@@ -173,7 +245,7 @@ export default function ImmersiveHero() {
       video.removeEventListener('loadedmetadata', initScrollTrigger)
       if (st) st.kill()
     }
-  }, [rawProgress])
+  }, [isTouch, rawProgress])
 
   const handleMouseMove = (e: React.MouseEvent) => {
     mouseX.current = e.clientX
@@ -188,18 +260,27 @@ export default function ImmersiveHero() {
     >
       {/* Pinned Sticky Viewport */}
       <div className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center">
-        {/* Full-Bleed Video Background */}
-        <div className="absolute inset-0 w-full h-full">
-          <video
-            ref={videoRef}
-            muted
-            playsInline
-            preload="auto"
-            className="w-full h-full object-cover object-center"
-          >
-            <source src="/hero-robot.webm" type="video/webm" />
-            <source src="/hero-robot.mp4" type="video/mp4" />
-          </video>
+        {/* Full-Bleed Scrub Background — poster behind prevents any black flash while loading */}
+        <div
+          className="absolute inset-0 w-full h-full bg-black bg-cover bg-center"
+          style={{ backgroundImage: "url(/hero-poster.jpg)" }}
+        >
+          {isTouch ? (
+            <canvas ref={canvasRef} className="block w-full h-full" />
+          ) : (
+            <video
+              ref={videoRef}
+              muted
+              playsInline
+              preload="auto"
+              poster="/hero-poster.jpg"
+              className="w-full h-full object-cover object-center"
+            >
+              {/* WebM first for Chrome/Firefox (all-intra, scrubs smoothly); MP4 fallback for Safari/iOS (no WebM support) */}
+              <source src="/hero-robot.webm" type="video/webm" />
+              <source src="/hero-robot.mp4" type="video/mp4" />
+            </video>
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/60 pointer-events-none" />
           <div className="absolute inset-0 bg-radial from-transparent via-black/20 to-black/80 pointer-events-none" />
         </div>
