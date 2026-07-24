@@ -9,7 +9,12 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function LenisProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      // Smooth-scroll anchor links (#services, etc.); offset clears the fixed navbar
+      anchors: { offset: -80 },
+    });
 
     // Sync Lenis scroll position with GSAP's ScrollTrigger
     lenis.on("scroll", ScrollTrigger.update);
