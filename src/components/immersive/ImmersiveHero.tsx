@@ -206,43 +206,33 @@ export default function ImmersiveHero() {
 
 
         {/* ─── Hero Content Layout ─── */}
-        <div className="relative z-30 w-full max-w-7xl mx-auto px-6 pt-20 pb-8 flex flex-col h-full justify-center gap-8 lg:gap-12 pointer-events-none">
+        <div className="relative z-30 w-full max-w-7xl mx-auto px-6 pt-20 pb-8 flex flex-col h-full justify-center gap-20 lg:gap-28 pointer-events-none">
 
-          {/* Top: Split Headline — Centered alone initially, animates upward as subheadline arrives */}
+          {/* Top: Centered Headline + Serif Subheading — animates upward as subheadline arrives */}
           <motion.div
             style={{ y: headlineY }}
-            className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 items-center"
+            className="w-full flex flex-col items-center text-center"
           >
-            {/* Left side: AI-Powered Services */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
+            <motion.h1
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-              className="text-left"
+              className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-extrabold text-white leading-[0.95] tracking-[-0.03em] drop-shadow-2xl"
             >
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.05] tracking-tight drop-shadow-2xl">
-                AI-Powered <br />
-                <span>Services</span>
-              </h1>
-            </motion.div>
-
-            {/* Right side: for Growing Businesses */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-              className="text-left md:text-right"
+              AI-Powered Services
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="hero-serif mt-4 md:mt-5 text-3xl sm:text-4xl md:text-5xl font-normal italic text-[var(--bail-orange)] leading-[1.1] tracking-tight drop-shadow-[0_0_35px_rgba(237,130,28,0.6)]"
             >
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.05] tracking-tight drop-shadow-2xl">
-                <span className="hero-serif text-[var(--bail-orange)] font-normal italic drop-shadow-[0_0_35px_rgba(237,130,28,0.6)]">
-                  for Growing <br />
-                  Businesses
-                </span>
-              </h1>
-            </motion.div>
+              for Growing Businesses
+            </motion.p>
           </motion.div>
 
-          {/* Middle Centered: Subtitle Vertical List & Glassmorphic Buttons (Animates in during 2s scroll & stays visible) */}
+          {/* Middle Centered: Subtitle Vertical List & Glassmorphic Buttons — commented out per request */}
+          {false && (
           <motion.div
             style={{ opacity: heroSubOpacity, y: heroSubY }}
             className="w-full max-w-xl mx-auto text-center flex flex-col items-center gap-6 pointer-events-auto"
@@ -281,6 +271,7 @@ export default function ImmersiveHero() {
               </a>
             </div>
           </motion.div>
+          )}
 
           {/* Bottom: Spread Full-Width Transparent Glassmorphic 6-Stat Bar */}
           <motion.div
@@ -289,7 +280,7 @@ export default function ImmersiveHero() {
               y: statsY,
               scale: statsScale,
             }}
-            className="w-full pointer-events-auto -mb-2 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-xl shadow-2xl overflow-hidden grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-y sm:divide-y-0 sm:divide-x divide-white/15"
+            className="w-full pointer-events-auto rounded-2xl bg-white/10 border border-white/20 backdrop-blur-xl shadow-2xl overflow-hidden grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-y sm:divide-y-0 sm:divide-x divide-white/15"
           >
             {stats.map((stat, i) => (
               <div key={i} className="p-4 flex flex-col items-center text-center justify-center">

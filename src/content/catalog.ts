@@ -20,7 +20,7 @@ export const hero = {
 export const stats = [
   { value: "100%", label: "Client ownership of all code & infrastructure" },
   { value: "9",    label: "Productized services ready to deploy" },
-  { value: "2 wks", label: "Typical time from scope to live system" },
+  { value: "2 weeks", label: "Typical time from scope to live system" },
   { value: "3×",   label: "Faster than building an equivalent in-house team" },
   { value: "24/7", label: "Always-on systems — no office hours, no downtime" },
   { value: "0",    label: "Vendor lock-in — switch tools anytime, you own everything" },
