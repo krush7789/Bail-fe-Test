@@ -171,6 +171,13 @@ export default function ChatWidget() {
   }, [messages]);
 
 
+  // Listen for external "open-chat" event
+  useEffect(() => {
+    const handleOpen = () => setOpen(true);
+    window.addEventListener("open-chat", handleOpen);
+    return () => window.removeEventListener("open-chat", handleOpen);
+  }, []);
+
   // Focus input when panel opens
   useEffect(() => {
     if (open) {

@@ -1,29 +1,80 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import SectionHeading from "@/components/shared/SectionHeading";
-import GlassCard from "@/components/shared/GlassCard";
-import AIChatDemo from "@/components/shared/AIChatDemo";
-import { AIVoiceInput } from "@/components/ui/ai-voice-input";
+import {
+  useAIDemoSequence,
+  SCENARIOS,
+  DemoScenarioId,
+} from "@/components/balanced/aidemo/useAIDemoSequence";
+import { ChatbotDemoPanel } from "@/components/balanced/aidemo/ChatbotDemoPanel";
+import { VoiceDemoPanel } from "@/components/balanced/aidemo/VoiceDemoPanel";
+import { HandoffConnector } from "@/components/balanced/aidemo/HandoffConnector";
+import { WorkflowProgress } from "@/components/balanced/aidemo/WorkflowProgress";
+import { Play, Pause, RotateCcw, MessageSquare, ArrowRight, Sparkles } from "lucide-react";
 
 export default function AIDemo() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const sectionRef = useRef<HTMLElement>(null);
+  const isInView = useInView(sectionRef, { amount: 0.25 });
+
+  const {
+    scenario,
+    scenarioId,
+    stage,
+    isPaused,
+    callTimer,
+    changeScenario,
+    restart,
+    togglePause,
+    startSequence,
+    stopSequence,
+  } = useAIDemoSequence();
+
+  // Trigger sequence on IntersectionObserver visibility
+  useEffect(() => {
+    if (isInView && stage === "idle" && !isPaused) {
+      startSequence();
+    } else if (!isInView) {
+      stopSequence();
+    }
+  }, [isInView, stage, isPaused, startSequence, stopSequence]);
+
+  // Open live ChatWidget helper
+  const openChatWidget = () => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("open-chat"));
+    }
+  };
+
+  // Smooth scroll to #contact
+  const scrollToContact = () => {
+    const el = document.getElementById("contact");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    } else {
+      window.location.href = "/#contact";
+    }
+  };
 
   return (
-    <section className="bg-[var(--ink-2)] py-28 px-6" aria-labelledby="demo-heading">
-      <div className="max-w-5xl mx-auto">
+    <section
+      id="watch-it-work"
+      ref={sectionRef}
+      className="bg-[var(--ink-2)] py-24 px-6 text-white overflow-hidden relative"
+      aria-labelledby="demo-heading"
+    >
+      <div className="max-w-6xl mx-auto">
+        {/* 1. Section Header (Verbatim) */}
         <motion.div
-          ref={ref}
-          initial={{ opacity: 0, y: 24 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-8"
         >
           <SectionHeading
             id="demo-heading"
-            eyebrow="Watch It Work"
+            eyebrow="WATCH IT WORK"
             title={
               <>
                 Your AI assistant,{" "}
@@ -34,63 +85,120 @@ export default function AIDemo() {
           />
         </motion.div>
 
-        {/* Two-column demo grid — both cards locked to the same height */}
-        <div className="grid md:grid-cols-2 gap-8 items-stretch">
-          {/* Chat demo */}
-          <motion.div
-            className="h-full"
-            initial={{ opacity: 0, x: -24 }}
-            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -24 }}
-            transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
-          >
-            <GlassCard glowColor="orange" className="flex flex-col h-[460px]">
-              <div className="flex items-center gap-2 mb-4 shrink-0">
-                <span className="text-xs font-semibold uppercase tracking-widest text-bail-orange/80">
-                  AI Chatbot in action
-                </span>
-                <span className="flex items-center gap-1 text-xs text-green-400 ml-auto">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block animate-pulse" />
-                  Live
-                </span>
-              </div>
-              {/* flex-1 min-h-0 lets AIChatDemo fill remaining space and scroll */}
-              <div className="flex-1 min-h-0">
-                <AIChatDemo />
-              </div>
-            </GlassCard>
-          </motion.div>
+        {/* 2. Scenario Selector (Segmented Control Pills) */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
+          {(Object.keys(SCENARIOS) as DemoScenarioId[]).map((id) => {
+            const sc = SCENARIOS[id];
+            const isActive = scenarioId === id;
 
-          {/* Voice demo */}
-          <motion.div
-            className="h-full"
-            initial={{ opacity: 0, x: 24 }}
-            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 24 }}
-            transition={{ duration: 0.6, delay: 0.25, ease: "easeOut" }}
-          >
-            <GlassCard glowColor="cyan" className="flex flex-col gap-6 items-center justify-center h-[460px] text-center">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-[var(--glow-cyan)]/80 mb-1">
-                  Voice AI Agent
-                </p>
-                <p className="text-2xl font-bold text-white">Answers every call.</p>
-              </div>
-              <AIVoiceInput demoMode={true} demoInterval={3500} className="py-0" />
-              <p className="text-sm text-white/50 max-w-xs leading-relaxed">
-                Natural-speech AI answers every call, qualifies leads, and books appointments — 24/7.
-              </p>
-            </GlassCard>
-          </motion.div>
+            return (
+              <button
+                key={id}
+                type="button"
+                aria-pressed={isActive}
+                onClick={() => changeScenario(id)}
+                className={`
+                  px-4 py-2 rounded-full text-xs font-semibold font-sans transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--bail-orange)]
+                  ${isActive
+                    ? "bg-[var(--bail-orange)] text-white shadow-lg shadow-orange-500/25 border border-[var(--bail-orange)] font-bold scale-105"
+                    : "bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border border-white/10"
+                  }
+                `}
+              >
+                {sc.label}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Subtitle */}
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-          transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
-          className="text-center text-sm text-white/40 mt-10"
-        >
-          This website runs on the same AI systems we build for our clients.
-        </motion.p>
+        {/* 3. Connected 2-Panel Demonstration Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-6 items-stretch min-h-[460px]">
+          {/* Left Panel: AI Chatbot */}
+          <ChatbotDemoPanel stage={stage} scenario={scenario} />
+
+          {/* Handoff Connector */}
+          <HandoffConnector stage={stage} />
+
+          {/* Right Panel: Voice AI Agent */}
+          <VoiceDemoPanel
+            stage={stage}
+            scenario={scenario}
+            callTimer={callTimer}
+          />
+        </div>
+
+        {/* 4. Workflow Progress Bar */}
+        <WorkflowProgress stage={stage} />
+
+        {/* 5. Playback & Interactive Controls */}
+        <div className="flex flex-wrap items-center justify-between gap-4 py-4 px-5 rounded-2xl bg-white/5 border border-white/10 mb-12">
+          {/* Demo Controls */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={togglePause}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-xs font-semibold transition-colors"
+            >
+              {isPaused ? (
+                <>
+                  <Play className="w-3.5 h-3.5 text-emerald-400 fill-emerald-400" />
+                  <span>Resume Demo</span>
+                </>
+              ) : (
+                <>
+                  <Pause className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                  <span>Pause Demo</span>
+                </>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={restart}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-xs font-semibold text-white/70 hover:text-white transition-colors"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Restart</span>
+            </button>
+          </div>
+
+          {/* Try it yourself action */}
+          <button
+            type="button"
+            onClick={openChatWidget}
+            className="flex items-center gap-2 text-xs font-bold text-[var(--bail-orange)] hover:text-amber-400 transition-colors font-mono"
+          >
+            <span>Try it yourself — Launch Live Bot</span>
+          </button>
+        </div>
+
+        {/* 6. Subtitle & CTAs (Verbatim) */}
+        <div className="text-center space-y-6">
+          <p className="text-sm text-white/50 leading-relaxed max-w-xl mx-auto">
+            This website runs on the same AI systems we build for our clients.
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            {/* Primary CTA */}
+            <button
+              type="button"
+              onClick={openChatWidget}
+              className="px-6 py-3.5 rounded-full bg-[var(--bail-orange)] hover:bg-amber-600 text-white font-bold text-sm shadow-lg shadow-orange-500/20 transition-all flex items-center gap-2"
+            >
+              <span>Experience the assistant</span>
+            </button>
+
+            {/* Secondary CTA */}
+            <button
+              type="button"
+              onClick={scrollToContact}
+              className="px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/15 text-white font-semibold text-sm border border-white/15 transition-all flex items-center gap-2"
+            >
+              <span>Build this for my business</span>
+              <ArrowRight className="w-4 h-4 text-[var(--bail-orange)]" />
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   );

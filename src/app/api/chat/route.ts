@@ -4,7 +4,7 @@ import { buildSystemPrompt } from "@/lib/chat-prompt";
 
 export const maxDuration = 30;
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "sk-fallback-build-key" });
 
 // ── Abuse limits ───────────────────────────────────────────────────────────
 const MAX_BODY_BYTES      = 12_288;  // 12 KB — reject oversized bodies before parsing

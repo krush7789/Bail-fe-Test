@@ -5,14 +5,10 @@ import LenisProvider from "@/components/balanced/LenisProvider";
 import ImmersiveHero from "@/components/immersive/ImmersiveHero";
 import PinnedProcess from "@/components/immersive/PinnedProcess";
 import Navbar from "@/components/balanced/Navbar";
-import StatsBand from "@/components/balanced/StatsBand";
 import ImmersiveServices from "@/components/immersive/ImmersiveServices";
 import AIDemo from "@/components/balanced/AIDemo";
 import WhyUs from "@/components/balanced/WhyUs";
-import CaseStudy from "@/components/balanced/CaseStudy";
-import TechStack from "@/components/balanced/TechStack";
 import CTAContact from "@/components/balanced/CTAContact";
-import { CinematicFooter } from "@/components/ui/motion-footer";
 
 export default function ImmersivePage() {
   return (
@@ -20,16 +16,12 @@ export default function ImmersivePage() {
       <Navbar />
       <main>
         <ImmersiveHero />
-        <StatsBand />
         <ImmersiveServices />
-        <AIDemo />
+        {/* <AIDemo /> */}
         <PinnedProcess />
         <WhyUs />
-        {/* <CaseStudy /> */}
-        {/* <TechStack /> */}
         <CTAContact />
       </main>
-      {/* <CinematicFooter /> */}
     </LenisProvider>
   );
 }

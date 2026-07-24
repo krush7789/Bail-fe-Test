@@ -1,190 +1,321 @@
 'use client'
 
 import * as React from 'react'
-import { FloatingIconsHero } from '@/components/ui/floating-icons-hero-section'
-import type { FloatingIconsHeroProps } from '@/components/ui/floating-icons-hero-section'
-import { hero } from '@/content/catalog'
+import { motion, useMotionValue, useSpring, useScroll, useTransform } from 'framer-motion'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { hero, stats } from '@/content/catalog'
 
-// --- AI platform icons ---
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger)
+}
 
-const IconChatGPT = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg {...props} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="12" r="11" fill="#000" />
-    {/* OpenAI mark — 3 overlapping ellipses at 60° intervals */}
-    <g transform="translate(12,12)" stroke="white" strokeWidth="1.7" fill="none">
-      <ellipse rx="2.6" ry="5.4" transform="rotate(0)" />
-      <ellipse rx="2.6" ry="5.4" transform="rotate(60)" />
-      <ellipse rx="2.6" ry="5.4" transform="rotate(120)" />
-    </g>
-    {/* centre punch-out */}
-    <circle cx="12" cy="12" r="2" fill="#000" />
-  </svg>
-)
+interface OrbitIcon {
+  id: number
+  src: string
+  label: string
+  x: string
+  y: string
+  delay: number
+  size: string
+}
 
-const IconClaude = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg {...props} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    {/* Anthropic terracotta — correct Claude brand colour */}
-    <circle cx="12" cy="12" r="11" fill="#C96A3B" />
-    {/* Clean Anthropic A mark */}
-    <path d="M9 17L12 7L15 17" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-    <line x1="10.3" y1="13.5" x2="13.7" y2="13.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
-  </svg>
-)
 
-// 4-pointed star — the actual Gemini mark
-const IconGemini = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg {...props} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="12" r="11" fill="#0f172a" />
-    <path
-      d="M12 3C12 7.97 16.03 12 21 12C16.03 12 12 16.03 12 21C12 16.03 7.97 12 3 12C7.97 12 12 7.97 12 3Z"
-      fill="url(#geminiGrad)"
-    />
-    <defs>
-      <linearGradient id="geminiGrad" x1="3" y1="3" x2="21" y2="21" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#4285F4" />
-        <stop offset="0.5" stopColor="#9AA0F5" />
-        <stop offset="1" stopColor="#79D0F1" />
-      </linearGradient>
-    </defs>
-  </svg>
-)
 
-// Eye/deep-ocean mark
-const IconDeepSeek = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg {...props} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="12" r="11" fill="#0C1440" />
-    <path
-      d="M4 12C4 12 7.5 7 12 7C16.5 7 20 12 20 12C20 12 16.5 17 12 17C7.5 17 4 12 4 12Z"
-      stroke="#4D7CFE"
-      strokeWidth="1.5"
-      fill="none"
-    />
-    <circle cx="12" cy="12" r="3" fill="#4D7CFE" />
-    <circle cx="12" cy="12" r="1.4" fill="#0C1440" />
-    <circle cx="13" cy="11" r="0.6" fill="white" fillOpacity="0.9" />
-  </svg>
-)
+function FloatingIcon({ iconData, mouseX, mouseY }: {
+  iconData: OrbitIcon
+  mouseX: React.MutableRefObject<number>
+  mouseY: React.MutableRefObject<number>
+}) {
+  const ref = React.useRef<HTMLDivElement>(null)
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
 
-// Mistral AI — mosaic block pattern in orange
-const IconMistral = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg {...props} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="12" r="11" fill="#1a1a1a" />
-    <rect x="5" y="5" width="4.5" height="4.5" rx="0.5" fill="#FF7000" />
-    <rect x="14.5" y="5" width="4.5" height="4.5" rx="0.5" fill="#FF7000" />
-    <rect x="9.75" y="9.75" width="4.5" height="4.5" rx="0.5" fill="#FF7000" fillOpacity="0.75" />
-    <rect x="5" y="14.5" width="4.5" height="4.5" rx="0.5" fill="#FF7000" fillOpacity="0.5" />
-    <rect x="14.5" y="14.5" width="4.5" height="4.5" rx="0.5" fill="#FF7000" />
-  </svg>
-)
+  const springX = useSpring(x, { stiffness: 120, damping: 22 })
+  const springY = useSpring(y, { stiffness: 120, damping: 22 })
 
-// Meta Llama — infinity loop
-const IconMetaLlama = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg {...props} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="12" r="11" fill="#0866FF" />
-    <path
-      d="M5 12C5 10.3 6.3 9 8 9C9.1 9 10 9.6 10.6 10.5L12 13L13.4 10.5C14 9.6 14.9 9 16 9C17.7 9 19 10.3 19 12C19 13.7 17.7 15 16 15C14.9 15 14 14.4 13.4 13.5L12 11L10.6 13.5C10 14.4 9.1 15 8 15C6.3 15 5 13.7 5 12Z"
-      stroke="white"
-      strokeWidth="1.8"
-      fill="none"
-      strokeLinejoin="round"
-    />
-  </svg>
-)
+  React.useEffect(() => {
+    const handleMouseMove = () => {
+      if (!ref.current) return
+      const rect = ref.current.getBoundingClientRect()
+      const cx = rect.left + rect.width / 2
+      const cy = rect.top + rect.height / 2
+      const dist = Math.sqrt(Math.pow(mouseX.current - cx, 2) + Math.pow(mouseY.current - cy, 2))
+      if (dist < 130) {
+        const angle = Math.atan2(mouseY.current - cy, mouseX.current - cx)
+        const force = (1 - dist / 130) * 35
+        x.set(-Math.cos(angle) * force)
+        y.set(-Math.sin(angle) * force)
+      } else {
+        x.set(0)
+        y.set(0)
+      }
+    }
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [x, y, mouseX, mouseY])
 
-// Perplexity AI — asterisk compass
-const IconPerplexity = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg {...props} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="12" r="11" fill="#1a1a2e" />
-    <line x1="12" y1="5" x2="12" y2="19" stroke="#20B8CD" strokeWidth="1.8" strokeLinecap="round" />
-    <line x1="5" y1="12" x2="19" y2="12" stroke="#20B8CD" strokeWidth="1.8" strokeLinecap="round" />
-    <line x1="7.1" y1="7.1" x2="16.9" y2="16.9" stroke="#20B8CD" strokeWidth="1.8" strokeLinecap="round" />
-    <line x1="16.9" y1="7.1" x2="7.1" y2="16.9" stroke="#20B8CD" strokeWidth="1.8" strokeLinecap="round" />
-    <circle cx="12" cy="12" r="2.5" fill="#20B8CD" />
-  </svg>
-)
-
-// n8n
-const IconN8n = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg {...props} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="12" r="11" fill="#EA4B71" />
-    <circle cx="7" cy="12" r="2" fill="white" />
-    <circle cx="17" cy="12" r="2" fill="white" />
-    <circle cx="12" cy="7.5" r="2" fill="white" />
-    <line x1="9" y1="12" x2="15" y2="12" stroke="white" strokeWidth="1.5" />
-    <line x1="10.7" y1="9.8" x2="8.4" y2="10.9" stroke="white" strokeWidth="1.5" />
-    <line x1="13.3" y1="9.8" x2="15.6" y2="10.9" stroke="white" strokeWidth="1.5" />
-  </svg>
-)
-
-// Make
-const IconMake = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg {...props} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="12" r="11" fill="#6E42CA" />
-    <circle cx="12" cy="12" r="5" stroke="white" strokeWidth="1.5" fill="none" />
-    <circle cx="12" cy="12" r="2" fill="white" />
-    <line x1="12" y1="4" x2="12" y2="7" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="12" y1="17" x2="12" y2="20" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="4" y1="12" x2="7" y2="12" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="17" y1="12" x2="20" y2="12" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-)
-
-// Zapier
-const IconZapier = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg {...props} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="12" r="11" fill="#FF4A00" />
-    <path d="M13.5 5.5L8.5 13H13L10 19.5L19 9H14L16.5 5.5H13.5Z" fill="white" />
-  </svg>
-)
-
-// ElevenLabs
-const IconElevenLabs = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg {...props} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="12" r="11" fill="#111" />
-    <rect x="5.5" y="9" width="2" height="6" rx="1" fill="white" />
-    <rect x="9" y="7" width="2" height="10" rx="1" fill="white" />
-    <rect x="12.5" y="9" width="2" height="6" rx="1" fill="white" />
-    <rect x="16" y="10.5" width="2" height="3" rx="1" fill="white" />
-  </svg>
-)
-
-// LangChain
-const IconLangChain = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg {...props} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="12" r="11" fill="#1C7C54" />
-    <path d="M8.5 10.5a3 3 0 0 0 0 3H10" stroke="white" strokeWidth="2" strokeLinecap="round" />
-    <path d="M15.5 13.5a3 3 0 0 0 0-3H14" stroke="white" strokeWidth="2" strokeLinecap="round" />
-    <line x1="10" y1="12" x2="14" y2="12" stroke="white" strokeWidth="2" strokeLinecap="round" />
-  </svg>
-)
-
-const icons: FloatingIconsHeroProps['icons'] = [
-  { id: 1,  icon: IconChatGPT,    className: 'top-[8%] left-[6%]' },
-  { id: 2,  icon: IconDeepSeek,   className: 'top-[20%] right-[5%]' },
-  { id: 3,  icon: IconGemini,     className: 'top-[5%] left-[35%]' },
-  { id: 4,  icon: IconClaude,     className: 'top-[5%] right-[28%]' },
-  { id: 5,  icon: IconN8n,        className: 'top-[45%] left-[3%]' },
-  { id: 6,  icon: IconMake,       className: 'top-[38%] right-[4%]' },
-  { id: 7,  icon: IconZapier,     className: 'top-[25%] left-[16%]' },
-  { id: 8,  icon: IconElevenLabs, className: 'top-[75%] left-[8%]' },
-  { id: 9,  icon: IconMistral,    className: 'top-[72%] right-[10%]' },
-  { id: 10, icon: IconMetaLlama,  className: 'bottom-[6%] left-[32%]' },
-  { id: 11, icon: IconPerplexity, className: 'bottom-[5%] right-[30%]' },
-  { id: 12, icon: IconLangChain,  className: 'top-[22%] right-[20%]' },
-]
+  return (
+    <motion.div
+      ref={ref}
+      style={{
+        x: springX,
+        y: springY,
+        left: `calc(50% + ${iconData.x})`,
+        top: `calc(50% + ${iconData.y})`,
+      }}
+      initial={{ opacity: 0, scale: 0.4 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{
+        delay: 0.4 + iconData.delay,
+        duration: 0.7,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      className="absolute -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-auto"
+    >
+      <motion.div
+        className={`${iconData.size} flex items-center justify-center rounded-2xl bg-white/10 border border-white/20 backdrop-blur-md shadow-2xl p-2.5 hover:border-white/40 hover:bg-white/20 transition-all hover:scale-110`}
+        animate={{
+          y: [0, -6, 0, 6, 0],
+          x: [0, 4, 0, -4, 0],
+          rotate: [0, 3, 0, -3, 0],
+        }}
+        transition={{
+          duration: 5 + (iconData.id * 0.6),
+          repeat: Infinity,
+          repeatType: 'mirror',
+          ease: 'easeInOut',
+        }}
+        title={iconData.label}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={iconData.src}
+          alt={iconData.label}
+          className="w-full h-full object-contain filter drop-shadow-md"
+        />
+      </motion.div>
+    </motion.div>
+  )
+}
 
 export default function ImmersiveHero() {
+  const containerRef = React.useRef<HTMLDivElement>(null)
+  const videoRef = React.useRef<HTMLVideoElement>(null)
+  const mouseX = React.useRef(0)
+  const mouseY = React.useRef(0)
+
+  const rawProgress = useMotionValue(0)
+  const smoothProgress = useSpring(rawProgress, { stiffness: 90, damping: 22, mass: 0.4 })
+
+  // Subheadline & CTA buttons enter FIRST — from 0 to 0.3 scroll progress — and settle before the stats bar begins
+  const heroSubOpacity = useTransform(smoothProgress, [0, 0.3], [0, 1], { clamp: true })
+  const heroSubY = useTransform(smoothProgress, [0, 0.3], [50, 0], { clamp: true })
+
+  // Headline sits lower on screen initially (220px lower), and animates upward alongside the subheadline/buttons
+  const headlineY = useTransform(smoothProgress, [0, 0.3], [220, 0], { clamp: true })
+
+  // Stats band enters AFTER the text/buttons have settled (0.35), stretched all the way to 0.95 so it finishes
+  // in step with the video scrub — no 2-3s of empty video tail once everything else is done
+  const statsOpacity = useTransform(smoothProgress, [0.35, 0.95], [0, 1], { clamp: true })
+  const statsY = useTransform(smoothProgress, [0.35, 0.95], [80, 0], { clamp: true })
+  const statsScale = useTransform(smoothProgress, [0.35, 0.95], [0.94, 1], { clamp: true })
+
+  // GSAP ScrollTrigger Video Control with Smooth RAF Lerping
+  React.useEffect(() => {
+    const container = containerRef.current
+    const video = videoRef.current
+    if (!container || !video) return
+
+    let st: ScrollTrigger | null = null
+    let targetTime = 0
+    let rafId: number
+
+    const renderLoop = () => {
+      if (video && !isNaN(video.duration) && video.duration > 0) {
+        const delta = targetTime - video.currentTime
+        if (Math.abs(delta) > 0.0005) {
+          video.currentTime += delta * 0.18
+        }
+      }
+      rafId = requestAnimationFrame(renderLoop)
+    }
+
+    rafId = requestAnimationFrame(renderLoop)
+
+    const initScrollTrigger = () => {
+      if (st) st.kill()
+
+      const duration = video.duration || 5
+
+      st = ScrollTrigger.create({
+        trigger: container,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 0.8,
+        onUpdate: (self) => {
+          rawProgress.set(self.progress)
+          if (!isNaN(duration) && duration > 0) {
+            targetTime = self.progress * duration
+          }
+        },
+      })
+    }
+
+    if (video.readyState >= 1) {
+      initScrollTrigger()
+    } else {
+      video.addEventListener('loadedmetadata', initScrollTrigger)
+    }
+
+    return () => {
+      cancelAnimationFrame(rafId)
+      video.removeEventListener('loadedmetadata', initScrollTrigger)
+      if (st) st.kill()
+    }
+  }, [rawProgress])
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    mouseX.current = e.clientX
+    mouseY.current = e.clientY
+  }
+
   return (
-    <FloatingIconsHero
-      className="bg-ink"
-      titleClassName="bg-gradient-to-b from-white to-white/70 text-transparent bg-clip-text"
-      subtitleClassName="mt-6 max-w-xl mx-auto text-lg text-white/60"
-      iconCardClassName="bg-white/5 border border-white/10"
-      title="AI-Powered Services for Growing Businesses"
-      subtitle={hero.subheadline}
-      ctaText={hero.cta.label}
-      ctaHref={hero.cta.href}
-      icons={icons}
-    />
+    <div
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      className="relative w-full h-[250vh] bg-black"
+    >
+      {/* Pinned Sticky Viewport */}
+      <div className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center">
+        {/* Full-Bleed Video Background */}
+        <div className="absolute inset-0 w-full h-full">
+          <video
+            ref={videoRef}
+            muted
+            playsInline
+            preload="auto"
+            className="w-full h-full object-cover object-center"
+          >
+            <source src="/hero-robot.webm" type="video/webm" />
+            <source src="/hero-robot.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/60 pointer-events-none" />
+          <div className="absolute inset-0 bg-radial from-transparent via-black/20 to-black/80 pointer-events-none" />
+        </div>
+
+
+        {/* ─── Hero Content Layout ─── */}
+        <div className="relative z-30 w-full max-w-7xl mx-auto px-6 pt-20 pb-8 flex flex-col h-full justify-center gap-8 lg:gap-12 pointer-events-none">
+
+          {/* Top: Split Headline — Centered alone initially, animates upward as subheadline arrives */}
+          <motion.div
+            style={{ y: headlineY }}
+            className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 items-center"
+          >
+            {/* Left side: AI-Powered Services */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+              className="text-left"
+            >
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.05] tracking-tight drop-shadow-2xl">
+                AI-Powered <br />
+                <span>Services</span>
+              </h1>
+            </motion.div>
+
+            {/* Right side: for Growing Businesses */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className="text-left md:text-right"
+            >
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.05] tracking-tight drop-shadow-2xl">
+                <span className="hero-serif text-[var(--bail-orange)] font-normal italic drop-shadow-[0_0_35px_rgba(237,130,28,0.6)]">
+                  for Growing <br />
+                  Businesses
+                </span>
+              </h1>
+            </motion.div>
+          </motion.div>
+
+          {/* Middle Centered: Subtitle Vertical List & Glassmorphic Buttons (Animates in during 2s scroll & stays visible) */}
+          <motion.div
+            style={{ opacity: heroSubOpacity, y: heroSubY }}
+            className="w-full max-w-xl mx-auto text-center flex flex-col items-center gap-6 pointer-events-auto"
+          >
+            {/* Subheadline - Vertical Stacked Centered List */}
+            <div className="flex flex-col items-center gap-2.5 font-medium drop-shadow">
+              {['Intelligent automation', 'Sales growth', 'Workflow efficiency'].map((item, i) => (
+                <div key={i} className="flex items-center gap-3 text-base sm:text-lg text-white/90 font-medium">
+                  <span className="w-2 h-2 rounded-full bg-[var(--bail-orange)] shadow-[0_0_10px_rgba(237,130,28,0.8)] shrink-0" />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Glassmorphic Button Row - Centered */}
+            <div className="flex flex-wrap items-center justify-center gap-3 mt-1">
+              {/* Book a call — Orange Pill with White Circular Arrow Badge */}
+              <a
+                href={hero.cta.href}
+                className="inline-flex items-center justify-between gap-4 pl-7 pr-2 py-2 rounded-full bg-[var(--bail-orange)] text-white font-bold text-sm hover:brightness-110 transition-all duration-200 shadow-xl shadow-[var(--bail-orange)]/40 hover:scale-105 group"
+              >
+                <span>Book a call</span>
+                <span className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-black shrink-0 shadow-md group-hover:translate-x-0.5 transition-transform">
+                  <svg className="w-4 h-4 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </span>
+              </a>
+
+              {/* See what we build — Glassmorphic Secondary Button */}
+              <a
+                href={hero.ctaSecondary.href}
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-white font-semibold text-sm hover:bg-white/20 hover:border-white/40 transition-all duration-200 shadow-lg"
+              >
+                See what we build
+              </a>
+            </div>
+          </motion.div>
+
+          {/* Bottom: Spread Full-Width Transparent Glassmorphic 6-Stat Bar */}
+          <motion.div
+            style={{
+              opacity: statsOpacity,
+              y: statsY,
+              scale: statsScale,
+            }}
+            className="w-full pointer-events-auto -mb-2 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-xl shadow-2xl overflow-hidden grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-y sm:divide-y-0 sm:divide-x divide-white/15"
+          >
+            {stats.map((stat, i) => (
+              <div key={i} className="p-4 flex flex-col items-center text-center justify-center">
+                <span className="text-2xl lg:text-3xl font-extrabold text-[var(--bail-orange)] drop-shadow-md">
+                  {stat.value}
+                </span>
+                <span className="text-[10px] text-white/75 font-medium leading-tight mt-1.5 max-w-[130px]">
+                  {stat.label}
+                </span>
+              </div>
+            ))}
+          </motion.div>
+
+        </div>
+
+        {/* Scroll indicator prompt */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.6 }}
+          transition={{ delay: 1 }}
+          className="absolute bottom-4 right-8 flex flex-col items-end gap-1 z-30 pointer-events-none"
+        >
+          <span className="text-[10px] text-white/60 tracking-widest uppercase font-mono">Scroll down</span>
+          <div className="w-[30px] h-[2px] rounded-full bg-white/40 animate-pulse" />
+        </motion.div>
+      </div>
+    </div>
   )
 }
