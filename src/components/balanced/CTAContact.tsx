@@ -2,6 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
+import { MapPin, Phone, Mail } from "lucide-react";
 import { cta } from "@/content/catalog";
 
 type Status = "idle" | "sending" | "success" | "error";
@@ -64,15 +65,15 @@ export default function CTAContact() {
           </h2>
         </motion.div>
 
-        {/* 2-Column Split: Compact Form on Left + Information Tab on Right */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        {/* 2-Column Split: Contact info on Left + Form on Right (equal height) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
           
           {/* LEFT SIDE: Contact form (Trimmed & Compact) */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-            transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-            className="bg-[var(--ink-3)] border border-[var(--glass-border)] rounded-2xl p-5 md:p-6 flex flex-col justify-between shadow-2xl backdrop-blur-xl"
+            transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+            className="order-2 h-full bg-[var(--ink-3)] border border-[var(--glass-border)] rounded-2xl p-6 md:p-7 flex flex-col shadow-2xl backdrop-blur-xl"
           >
             {status === "success" ? (
               <div className="text-center py-8 flex flex-col items-center justify-center gap-3">
@@ -91,8 +92,13 @@ export default function CTAContact() {
                 </button>
               </div>
             ) : (
-              <form className="flex flex-col gap-3.5" onSubmit={handleSubmit}>
-                <div className="space-y-3">
+              <form className="flex flex-col gap-5 h-full" onSubmit={handleSubmit}>
+                <div>
+                  <h3 className="text-lg font-bold text-white">Send us a message</h3>
+                  <p className="text-xs text-white/50 mt-1">We&apos;ll get back to you within 24 hours.</p>
+                </div>
+
+                <div className="flex flex-col gap-4 flex-1">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="flex flex-col gap-1">
                       <label htmlFor="contact-name" className="text-[10px] font-mono font-bold text-white/50 uppercase tracking-widest">
@@ -105,7 +111,7 @@ export default function CTAContact() {
                         required
                         value={form.name}
                         onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                        className="px-3.5 py-2 rounded-xl border border-white/10 bg-white/5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[var(--bail-orange)]/50 transition-colors"
+                        className="px-3.5 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[var(--bail-orange)]/50 transition-colors"
                       />
                     </div>
                     <div className="flex flex-col gap-1">
@@ -119,23 +125,22 @@ export default function CTAContact() {
                         required
                         value={form.email}
                         onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                        className="px-3.5 py-2 rounded-xl border border-white/10 bg-white/5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[var(--bail-orange)]/50 transition-colors"
+                        className="px-3.5 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[var(--bail-orange)]/50 transition-colors"
                       />
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-1 flex-1">
                     <label htmlFor="contact-message" className="text-[10px] font-mono font-bold text-white/50 uppercase tracking-widest">
                       What are you building?
                     </label>
                     <textarea
                       id="contact-message"
-                      rows={2}
                       required
                       placeholder="Tell us about your project or workflow..."
                       value={form.message}
                       onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
-                      className="px-3.5 py-2 rounded-xl border border-white/10 bg-white/5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[var(--bail-orange)]/50 transition-colors resize-none"
+                      className="flex-1 min-h-[120px] px-3.5 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[var(--bail-orange)]/50 transition-colors resize-none"
                     />
                   </div>
                 </div>
@@ -166,66 +171,64 @@ export default function CTAContact() {
             )}
           </motion.div>
 
-          {/* RIGHT SIDE: Information Tab Card (Simple, Clean, Professional) */}
+          {/* LEFT SIDE: Contact information — plain text, no boxed pills */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-            transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
-            className="bg-[var(--ink-3)] border border-[var(--glass-border)] rounded-2xl p-6 md:p-7 h-full flex flex-col justify-between space-y-4 shadow-2xl backdrop-blur-xl"
+            transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+            className="order-1 h-full flex flex-col justify-center py-2"
           >
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--bail-orange)] block mb-1 font-mono">
-                CONTACT INFORMATION
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--bail-orange)] block mb-3 font-mono">
+                GET IN TOUCH
               </span>
-              <h3 className="text-xl font-bold text-white mb-4">
-                Get in touch with our team
+              <h3 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-snug">
+                Talk to the team<br />that builds it.
               </h3>
+              <p className="text-sm text-white/50 leading-relaxed max-w-sm mb-9">
+                Prefer to reach us directly? Here&apos;s where to find Bits AI Lab.
+              </p>
 
-              <div className="space-y-3">
-                {/* Company Name */}
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider text-white/40 block mb-0.5">
-                    Company Name
-                  </span>
-                  <span className="text-sm font-semibold text-white">Bits AI Labs</span>
-                </div>
-
+              <div className="space-y-7">
                 {/* Address */}
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider text-white/40 block mb-0.5">
-                    Address
-                  </span>
-                  <span className="text-sm font-semibold text-white">New Delhi, India</span>
+                <div className="flex items-start gap-4">
+                  <MapPin className="w-[18px] h-[18px] text-[var(--bail-orange)] mt-0.5 shrink-0" />
+                  <div>
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-white/40 block mb-1.5">
+                      Address
+                    </span>
+                    <p className="text-sm text-white/85 leading-relaxed">
+                      4th Floor, D-312, Sector-63A,<br />Noida, 201301
+                    </p>
+                  </div>
                 </div>
 
-                {/* Phone */}
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider text-white/40 block mb-0.5">
-                    Phone
-                  </span>
-                  <a href="tel:+911234567890" className="text-sm font-semibold text-white hover:text-[var(--bail-orange)] transition-colors">
-                    +91 1234567890
-                  </a>
+                {/* Mobile */}
+                <div className="flex items-start gap-4">
+                  <Phone className="w-[18px] h-[18px] text-[var(--bail-orange)] mt-0.5 shrink-0" />
+                  <div>
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-white/40 block mb-1.5">
+                      Mobile
+                    </span>
+                    <a href="tel:+919650629457" className="text-sm text-white/85 hover:text-[var(--bail-orange)] transition-colors">
+                      +91 96506 29457
+                    </a>
+                  </div>
                 </div>
 
-                {/* Email Address */}
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider text-white/40 block mb-0.5">
-                    Email Address
-                  </span>
-                  <a href="mailto:bitsailabs@bits.com" className="text-sm font-semibold text-white hover:text-[var(--bail-orange)] transition-colors">
-                    bitsailabs@bits.com
-                  </a>
+                {/* Email */}
+                <div className="flex items-start gap-4">
+                  <Mail className="w-[18px] h-[18px] text-[var(--bail-orange)] mt-0.5 shrink-0" />
+                  <div>
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-white/40 block mb-1.5">
+                      Email
+                    </span>
+                    <a href="mailto:support@bitsailab.com" className="text-sm text-white/85 hover:text-[var(--bail-orange)] transition-colors">
+                      support@bitsailab.com
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-white/50 font-mono">
-              <span className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                Direct Team Response
-              </span>
-              <span>IST (UTC+5:30)</span>
             </div>
           </motion.div>
 

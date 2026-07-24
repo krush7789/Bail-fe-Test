@@ -108,17 +108,18 @@ export default function ImmersiveHero() {
   const rawProgress = useMotionValue(0)
   const smoothProgress = useSpring(rawProgress, { stiffness: 90, damping: 22, mass: 0.4 })
 
-  // Stats band animates in as webm scrolls from 0s to 3s (0.0 to 0.6 scroll progress), reaches 100% opacity at 3s, and stays 100% visible when completely scrolled
-  const statsOpacity = useTransform(smoothProgress, [0, 0.6], [0, 1], { clamp: true })
-  const statsY = useTransform(smoothProgress, [0, 0.6], [80, 0], { clamp: true })
-  const statsScale = useTransform(smoothProgress, [0, 0.6], [0.94, 1], { clamp: true })
+  // Subheadline & CTA buttons enter FIRST — from 0 to 0.3 scroll progress — and settle before the stats bar begins
+  const heroSubOpacity = useTransform(smoothProgress, [0, 0.3], [0, 1], { clamp: true })
+  const heroSubY = useTransform(smoothProgress, [0, 0.3], [50, 0], { clamp: true })
 
-  // Subheadline & CTA buttons animate in as webm scrolls from 0s to 2s (0.0 to 0.4 scroll progress), reach 100% opacity at 2s, and stay 100% visible
-  const heroSubOpacity = useTransform(smoothProgress, [0, 0.4], [0, 1], { clamp: true })
-  const heroSubY = useTransform(smoothProgress, [0, 0.4], [50, 0], { clamp: true })
+  // Headline sits lower on screen initially (220px lower), and animates upward alongside the subheadline/buttons
+  const headlineY = useTransform(smoothProgress, [0, 0.3], [220, 0], { clamp: true })
 
-  // Headline sits lower on screen initially (220px lower), and smoothly animates upward to 0px as text/buttons enter from below
-  const headlineY = useTransform(smoothProgress, [0, 0.4], [220, 0], { clamp: true })
+  // Stats band enters AFTER the text/buttons have settled (0.35), stretched all the way to 0.95 so it finishes
+  // in step with the video scrub — no 2-3s of empty video tail once everything else is done
+  const statsOpacity = useTransform(smoothProgress, [0.35, 0.95], [0, 1], { clamp: true })
+  const statsY = useTransform(smoothProgress, [0.35, 0.95], [80, 0], { clamp: true })
+  const statsScale = useTransform(smoothProgress, [0.35, 0.95], [0.94, 1], { clamp: true })
 
   // GSAP ScrollTrigger Video Control with Smooth RAF Lerping
   React.useEffect(() => {
@@ -205,7 +206,7 @@ export default function ImmersiveHero() {
 
 
         {/* ─── Hero Content Layout ─── */}
-        <div className="relative z-30 w-full max-w-7xl mx-auto px-6 pt-20 pb-16 flex flex-col h-full justify-center gap-8 lg:gap-12 pointer-events-none">
+        <div className="relative z-30 w-full max-w-7xl mx-auto px-6 pt-20 pb-8 flex flex-col h-full justify-center gap-8 lg:gap-12 pointer-events-none">
 
           {/* Top: Split Headline — Centered alone initially, animates upward as subheadline arrives */}
           <motion.div
@@ -288,7 +289,7 @@ export default function ImmersiveHero() {
               y: statsY,
               scale: statsScale,
             }}
-            className="w-full pointer-events-auto mb-2 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-xl shadow-2xl overflow-hidden grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-y sm:divide-y-0 sm:divide-x divide-white/15"
+            className="w-full pointer-events-auto -mb-2 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-xl shadow-2xl overflow-hidden grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-y sm:divide-y-0 sm:divide-x divide-white/15"
           >
             {stats.map((stat, i) => (
               <div key={i} className="p-4 flex flex-col items-center text-center justify-center">

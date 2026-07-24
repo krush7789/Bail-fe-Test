@@ -75,7 +75,7 @@ export default function ImmersiveServices() {
   return (
     <section
       id="services"
-      className="relative overflow-hidden py-24 px-6 bg-[#f5f6f9]"
+      className="relative overflow-hidden py-20 px-6 bg-[#f5f6f9]"
       aria-labelledby="services-heading"
     >
       {/* Subtle bottom-only pixel/data surface pattern */}
@@ -90,7 +90,7 @@ export default function ImmersiveServices() {
         </span>
 
         {/* Header & Category Toggle Row */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
           <div>
             <h2
               id="services-heading"
@@ -138,10 +138,10 @@ export default function ImmersiveServices() {
         </div>
 
         {/* Main Split Showcase Container (Left Sticky List + Right Product Showcase) */}
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start relative">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-stretch relative">
           
           {/* LEFT SIDE: Sticky Vertical Service List (~32% Width) */}
-          <div className="w-full lg:w-[32%] sticky top-28 self-start flex flex-col gap-3 py-2 border-l-2 border-gray-200/80 pl-4 relative">
+          <div className="w-full lg:w-[32%] flex flex-col gap-3 py-1 border-l-2 border-gray-200/80 pl-4 relative">
             
             {categoryServices.map((service, index) => {
               const isSelected = service.id === activeServiceId;
@@ -151,7 +151,7 @@ export default function ImmersiveServices() {
                 <div
                   key={service.id}
                   onClick={() => setActiveServiceId(service.id)}
-                  className={`relative cursor-pointer transition-all duration-300 rounded-2xl p-4 text-left group ${
+                  className={`relative cursor-pointer transition-all duration-300 rounded-2xl px-4 py-3 text-left group flex-1 flex flex-col justify-center ${
                     isSelected
                       ? "bg-white shadow-xl shadow-gray-900/5 border border-gray-200/90"
                       : "hover:bg-white/60 text-gray-500"
@@ -207,7 +207,7 @@ export default function ImmersiveServices() {
           </div>
 
           {/* RIGHT SIDE: Interactive Product Showcase (~68% Width) */}
-          <div className="w-full lg:w-[68%] rounded-3xl bg-white border border-gray-200/90 shadow-2xl p-6 md:p-8 flex flex-col space-y-6 relative overflow-hidden transition-all">
+          <div className="w-full lg:w-[68%] rounded-3xl bg-white border border-gray-200/90 shadow-2xl p-5 md:p-7 flex flex-col space-y-5 relative overflow-hidden transition-all">
             
             {/* 1. Header Info */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 pb-4 border-b border-gray-100">
@@ -239,7 +239,7 @@ export default function ImmersiveServices() {
             </div>
 
             {/* 3. Interactive Product Preview Container */}
-            <div className="w-full min-h-[300px] lg:min-h-[340px] rounded-2xl bg-gray-50/80 border border-gray-200/80 p-3 md:p-4 shadow-inner relative overflow-hidden flex items-center justify-center">
+            <div className="w-full min-h-[220px] lg:min-h-[260px] rounded-2xl bg-gray-50/80 border border-gray-200/80 p-3 md:p-4 shadow-inner relative overflow-hidden flex items-center justify-center">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeServiceId}
