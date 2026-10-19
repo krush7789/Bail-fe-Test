@@ -12,6 +12,7 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
+    "@react-three/postprocessing": "^3.2.0",
     "@splinetool/react-spline": "^4.1.0",
     "@splinetool/runtime": "^1.12.95",
     "class-variance-authority": "^0.7.1",
@@ -23,12 +24,14 @@
     "next": "^16.2.1",
     "next-themes": "^0.4.6",
     "openai": "^6.42.0",
+    "postprocessing": "^6.39.5",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-markdown": "^10.1.0",
     "resend": "^6.9.4",
     "tailwind-merge": "^3.6.0",
-    "three": "^0.184.0"
+    "three": "^0.184.0",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
